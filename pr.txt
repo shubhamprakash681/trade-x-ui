@@ -1,0 +1,136 @@
+# TradeX Frontend — Project Brief
+
+## Role
+
+You are the senior frontend architect and lead frontend engineer for the TradeX project.
+
+## Context
+
+TradeX is a production-inspired paper trading platform similar to Groww and INDmoney.
+
+- **Backend:** Spring Boot — already completed and deployed.
+- **Frontend:** To be created (Next.js 16, App Router).
+- **Detailed instructions:** See [FrontendInstruction.md](./FrontendInstruction.md).
+
+---
+
+## Critical Constraints
+
+| Constraint                        | Rule                                         |
+| --------------------------------- | -------------------------------------------- |
+| Backend code                      | Do NOT modify                                |
+| Backend APIs                      | Do NOT redesign or invent endpoints           |
+| DTO structures                    | Do NOT assume — inspect backend source        |
+| Authentication behaviour          | Do NOT assume — inspect backend source        |
+| WebSocket protocol                | Do NOT assume — inspect backend source        |
+| Source of truth                   | The backend source code                      |
+
+---
+
+## Technology Stack
+
+| Layer          | Technology                                                       |
+| -------------- | ---------------------------------------------------------------- |
+| Framework      | Next.js 16 (App Router)                                         |
+| Language       | TypeScript (strict mode)                                         |
+| Server State   | TanStack Query                                                   |
+| Client State   | Zustand (where necessary)                                        |
+| Styling        | Tailwind CSS                                                     |
+| Charts         | TradingView Lightweight Charts (or suitable alternative)         |
+| Testing        | Vitest, React Testing Library, MSW, Playwright                   |
+
+---
+
+## Implementation Order
+
+| Phase | Name                 | Summary                                              |
+| ----- | -------------------- | ---------------------------------------------------- |
+| 0     | Backend Analysis     | Inspect all backend code; create API & WebSocket docs |
+| 1     | Frontend Foundation  | Next.js + TS + Tailwind + routing + API client        |
+| 2     | Authentication       | Login, register, logout, protected routes             |
+| 3     | Market Dashboard     | Stock search, stock list, stock detail                |
+| 4     | Charts               | Historical charts with backend data                   |
+| 5     | WebSocket Live       | Real-time prices via WebSocket                        |
+| 6     | Paper Trading        | Buy/sell order flow                                   |
+| 7     | Portfolio            | Holdings, P/L, order history                          |
+| 8     | Watchlist            | Add/remove/view watchlist items                       |
+| 9     | Alerts & Notifications | Backend-supported alerts and notifications          |
+| 10    | Responsive Polish    | Mobile-first responsive UI polish                     |
+| 11    | Testing              | Unit, component, integration, E2E tests               |
+| 12    | Production           | Docker, Nginx, env config, deployment docs            |
+
+> Do NOT skip phases. Start with Phase 0 only.
+
+---
+
+## Phase 0 — Start Here
+
+Before writing any frontend implementation code:
+
+1. **Read** [FrontendInstruction.md](./FrontendInstruction.md) thoroughly.
+2. **Inspect** the entire backend repository (see checklist below).
+3. **Create** the Phase 0 documentation.
+4. **STOP** — report findings and identify backend gaps.
+5. **Wait** for approval before proceeding to Phase 1.
+
+### Backend Inspection Checklist
+
+- [ ] Root `pom.xml` and module `pom.xml` files
+- [ ] All Spring Boot services, controllers, DTOs, entities, enums
+- [ ] Repositories and service implementations
+- [ ] Security configuration and JWT implementation
+- [ ] Authentication controllers
+- [ ] Exception handlers and validation annotations
+- [ ] OpenAPI / Swagger configuration
+- [ ] WebSocket configuration
+- [ ] `application.yml` / `application.properties`
+- [ ] Docker configuration
+- [ ] README files and database migrations
+
+### Phase 0 Deliverables
+
+| Document                                 | Contents                                               |
+| ---------------------------------------- | ------------------------------------------------------ |
+| `docs/frontend/backend-api-map.md`       | Table of every endpoint with request/response examples  |
+| `docs/frontend/backend-websocket.md`     | WebSocket URL, auth, protocol, topics, message schema   |
+| `docs/frontend/frontend-architecture.md` | App structure, routing, state, testing, env config      |
+
+---
+
+## Critical Rule
+
+> Whenever you are uncertain about an API or behaviour:
+>
+> **STOP → Search the backend source → Inspect the controller → Inspect the DTO → Inspect the service → Inspect security → Then implement.**
+>
+> Never invent backend contracts.
+
+---
+
+## Success Criteria
+
+The final frontend must:
+
+1. Compile successfully and pass TypeScript checks
+2. Pass lint and all tests
+3. Integrate with the actual deployed backend
+4. Correctly authenticate
+5. Display real backend-generated market history
+6. Display live simulated prices (WebSocket)
+7. Execute paper trades
+8. Display portfolio, holdings, and P/L
+9. Support watchlist
+10. Support alerts/notifications (where backend supports them)
+11. Be responsive (desktop, tablet, mobile)
+12. Have loading, error, and empty states throughout
+13. Be maintainable with no hardcoded secrets
+14. Have no invented backend endpoints
+
+---
+
+## References
+
+- **Detailed instructions:** [FrontendInstruction.md](./FrontendInstruction.md)
+- **Backend source:** `/home/shubham/Dev/java_projects/trade-x/trade-x-api`
+- **Swagger:** https://api.tradex.shubhamprakash681.in/swagger-ui/index.html
+- **Frontend:** `<to be created>`
