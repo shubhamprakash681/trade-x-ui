@@ -2,15 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Menu,
-  Moon,
-  Sun,
-  Monitor,
-  LogOut,
-  User,
-  Bell,
-} from "lucide-react";
+import { Menu, Moon, Sun, Monitor, LogOut, User, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/atoms/avatar";
 import { useAuthStore } from "@/store/auth.store";
@@ -59,7 +51,7 @@ export function Navbar() {
     } finally {
       clearAuth();
       queryClient.clear();
-      router.push("/login");
+      router.push("/");
     }
   }
 
@@ -100,9 +92,7 @@ export function Navbar() {
               onClick={() => setTheme(opt.value)}
               className={cn(
                 "rounded-md p-1.5 transition-colors",
-                theme === opt.value
-                  ? "bg-brand text-white"
-                  : "text-text-tertiary hover:text-text-primary"
+                theme === opt.value ? "bg-brand text-white" : "text-text-tertiary hover:text-text-primary",
               )}
               title={opt.label}
               aria-label={`Switch to ${opt.label} mode`}
@@ -119,20 +109,14 @@ export function Navbar() {
             className="flex items-center gap-2 rounded-lg p-1.5 hover:bg-bg-tertiary transition-colors"
             aria-label="User menu"
           >
-            <Avatar
-              src={user?.avatarUrl}
-              name={user?.fullName}
-              size="sm"
-            />
+            <Avatar src={user?.avatarUrl} name={user?.fullName} size="sm" />
           </button>
 
           {/* Dropdown */}
           {userMenuOpen && (
             <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border-primary bg-bg-elevated p-2 shadow-xl">
               <div className="mb-2 border-b border-border-primary px-3 pb-2">
-                <p className="text-sm font-medium text-text-primary">
-                  {user?.fullName}
-                </p>
+                <p className="text-sm font-medium text-text-primary">{user?.fullName}</p>
                 <p className="text-xs text-text-tertiary">{user?.email}</p>
               </div>
               <button
