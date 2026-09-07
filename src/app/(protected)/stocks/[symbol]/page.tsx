@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
 import { PriceChart } from "@/components/charts/price-chart";
 import { OrderForm } from "@/components/orders/order-form";
+import { WatchlistToggle } from "@/components/watchlist/watchlist-toggle";
 import { ErrorState } from "@/components/atoms/error-state";
 import { Spinner } from "@/components/atoms/spinner";
 import { useLatestPrice, useMarketHistory } from "@/hooks/use-market";
@@ -34,7 +35,7 @@ export default function StockDetailPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <Link href="/markets" className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary"><ArrowLeft className="h-4 w-4" />Back to markets</Link>
       <section className="flex flex-col justify-between gap-4 rounded-xl border border-border-primary bg-bg-secondary p-6 sm:flex-row sm:items-start">
-        <div><p className="text-sm text-text-secondary">{stock.data.exchange} · {stock.data.sector}</p><h1 className="mt-1 text-3xl font-bold text-text-primary">{stock.data.symbol}</h1><p className="mt-1 text-text-secondary">{stock.data.name}</p></div>
+        <div><p className="text-sm text-text-secondary">{stock.data.exchange} · {stock.data.sector}</p><div className="mt-1 flex flex-wrap items-center gap-3"><h1 className="text-3xl font-bold text-text-primary">{stock.data.symbol}</h1><WatchlistToggle symbol={stock.data.symbol} /></div><p className="mt-1 text-text-secondary">{stock.data.name}</p></div>
         <div className="sm:text-right"><p className="flex items-center justify-end gap-2 text-sm text-text-secondary">{displayedPrice ? "Live price" : "Reference price"}<span className={`h-2 w-2 rounded-full ${connectionStatus === "connected" ? "bg-profit" : connectionStatus === "connecting" ? "bg-warning" : "bg-text-tertiary"}`} aria-label={`Live market connection ${connectionStatus}`} /></p><p className="mt-1 text-2xl font-semibold text-text-primary">{formatCurrency(displayedPrice?.price ?? stock.data.referencePrice)}</p>{displayedPrice && <p className={`mt-1 text-sm font-medium ${getPnlColor(displayedPrice.changePercent)}`}>{formatPercent(displayedPrice.changePercent)}</p>}</div>
       </section>
       <Card>

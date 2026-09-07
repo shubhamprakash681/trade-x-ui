@@ -38,7 +38,7 @@ export const notificationsApi = {
 
   addToWatchlist: (symbol: string) =>
     apiClient
-      .post<WatchlistResponse>(`/api/watchlist/${symbol}`)
+      .post<WatchlistResponse>("/api/watchlist", { symbol })
       .then((r) => r.data),
 
   removeFromWatchlist: (symbol: string) =>

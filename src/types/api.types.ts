@@ -218,7 +218,9 @@ export interface UnreadCountResponse {
 export interface WatchlistResponse {
   id: number;
   symbol: string;
-  addedAt: string;
+  stockName: string;
+  exchange: string;
+  createdAt: string;
 }
 
 // ─── Alerts ───────────────────────────────────────────────────────────────────
@@ -234,9 +236,12 @@ export interface AlertRequest {
 export interface AlertResponse {
   id: number;
   symbol: string;
+  stockName: string;
   targetPrice: number;
   condition: AlertCondition;
-  triggered: boolean;
+  status: "ACTIVE" | "TRIGGERED";
+  triggeredPrice: number | null;
+  triggeredAt: string | null;
   createdAt: string;
 }
 

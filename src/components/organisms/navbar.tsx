@@ -18,6 +18,7 @@ import { useThemeStore } from "@/store/theme.store";
 import { authApi } from "@/api/auth.api";
 import { getRefreshToken } from "@/api/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUnreadNotificationCount } from "@/hooks/use-notification-features";
 
 const themeOptions = [
   { value: "light" as const, icon: Sun, label: "Light" },
@@ -31,6 +32,7 @@ export function Navbar() {
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const { theme, setTheme, toggleSidebar } = useThemeStore();
+  const unreadCount = useUnreadNotificationCount();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -83,6 +85,11 @@ export function Navbar() {
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />
+          {!!unreadCount.data?.count && (
+            <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-loss px-1 text-[10px] font-bold text-white">
+              {unreadCount.data.count > 99 ? "99+" : unreadCount.data.count}
+            </span>
+          )}
         </button>
 
         {/* Theme toggle */}
