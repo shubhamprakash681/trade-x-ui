@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## TradeX UI
+
+Next.js frontend for the TradeX paper-trading API.
+
 ## Getting Started
 
 First, run the development server:
@@ -15,6 +19,18 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+Set `NEXT_PUBLIC_API_BASE_URL` and `NEXT_PUBLIC_WS_BASE_URL` in `.env.local`; use `.env.example` as the template. Both values are public browser configuration, not secrets.
+
+## Quality checks
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
+For deployment and testing details, see [deployment documentation](docs/frontend/deployment.md) and [testing documentation](docs/frontend/frontend-testing.md).
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

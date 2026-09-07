@@ -50,7 +50,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border-primary bg-bg-secondary",
+          "fixed left-0 top-0 z-50 flex h-dvh flex-col border-r border-border-primary bg-bg-secondary",
           "transition-all duration-300 ease-in-out",
           "lg:relative lg:z-auto",
           sidebarOpen ? "w-64" : "w-0 lg:w-16",
@@ -74,7 +74,7 @@ export function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-2 py-4">
+        <nav aria-label="Primary navigation" className="flex-1 overflow-y-auto px-2 py-4">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const isActive =

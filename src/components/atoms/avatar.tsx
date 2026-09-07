@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- avatar URLs are backend-provided, dynamic external URLs. */
 import { cn, getInitials } from "@/lib/utils";
 
 interface AvatarProps {
