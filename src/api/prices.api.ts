@@ -11,4 +11,11 @@ export const pricesApi = {
     apiClient
       .get<PriceResponse>(`/api/prices/${symbol}`)
       .then((r) => r.data),
+
+  getHistory: (symbol?: string, limit = 100) =>
+    apiClient
+      .get<PriceResponse[]>("/api/prices/history", {
+        params: { symbol, limit },
+      })
+      .then((r) => r.data),
 };

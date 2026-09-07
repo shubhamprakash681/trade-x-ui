@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { marketApi } from "@/api/market.api";
+import { pricesApi } from "@/api/prices.api";
 
 const MARKET_STALE_TIME = 60_000;
 
@@ -26,5 +27,23 @@ export function useTrending() {
     queryKey: ["market", "trending"],
     queryFn: marketApi.getTrending,
     staleTime: MARKET_STALE_TIME,
+  });
+}
+
+export function useMarketHistory(symbol: string) {
+  return useQuery({
+    queryKey: ["market", "history", symbol],
+    queryFn: () => marketApi.getHistory(symbol),
+    enabled: Boolean(symbol),
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useLatestPrice(symbol: string) {
+  return useQuery({
+    queryKey: ["prices", symbol],
+    queryFn: () => pricesApi.getPrice(symbol),
+    enabled: Boolean(symbol),
+    staleTime: 30_000,
   });
 }

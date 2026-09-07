@@ -124,7 +124,7 @@ export interface PriceResponse {
   previousPrice: number;
   changeAmount: number;
   changePercent: number;
-  volume: number;
+  synthetic: boolean;
   timestamp: string;
 }
 
