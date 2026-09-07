@@ -8,8 +8,9 @@ import { ErrorState } from "@/components/atoms/error-state";
 import { Input } from "@/components/atoms/input";
 import { Spinner } from "@/components/atoms/spinner";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useLivePrices } from "@/hooks/use-live-prices";
 import { useStocks } from "@/hooks/use-stocks";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatPercent, getPnlColor } from "@/lib/utils";
 import { useState } from "react";
 
 const PAGE_SIZE = 12;
@@ -19,6 +20,7 @@ export default function MarketsPage() {
   const [page, setPage] = useState(0);
   const debouncedQuery = useDebouncedValue(query.trim());
   const stocks = useStocks(page, PAGE_SIZE, debouncedQuery);
+  const livePrices = useLivePrices(stocks.data?.content.map((stock) => stock.symbol) ?? []);
 
   if (stocks.isError) {
     return <ErrorState title="Couldn't load markets" description="Check your connection and try again." onRetry={() => stocks.refetch()} />;
@@ -43,15 +45,18 @@ export default function MarketsPage() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {stocks.data.content.map((stock) => (
+            {stocks.data.content.map((stock) => {
+              const livePrice = livePrices[stock.symbol];
+              return (
               <Link key={stock.symbol} href={`/stocks/${encodeURIComponent(stock.symbol)}`} className="rounded-xl border border-border-primary bg-bg-secondary p-5 transition-colors hover:border-brand hover:bg-bg-tertiary">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0"><h2 className="font-semibold text-text-primary">{stock.symbol}</h2><p className="mt-1 truncate text-sm text-text-secondary">{stock.name}</p></div>
-                  <p className="shrink-0 text-sm font-semibold text-text-primary">{formatCurrency(stock.referencePrice)}</p>
+                  <div className="shrink-0 text-right"><p className="text-sm font-semibold text-text-primary">{formatCurrency(livePrice?.price ?? stock.referencePrice)}</p>{livePrice && <p className={`mt-1 text-xs font-medium ${getPnlColor(livePrice.changePercent)}`}>{formatPercent(livePrice.changePercent)}</p>}</div>
                 </div>
                 <div className="mt-4 flex gap-2 text-xs"><span className="rounded bg-bg-tertiary px-2 py-1 text-text-secondary">{stock.exchange}</span><span className="rounded bg-bg-tertiary px-2 py-1 text-text-secondary">{stock.sector}</span></div>
               </Link>
-            ))}
+              );
+            })}
           </div>
           <div className="flex items-center justify-between">
             <p className="text-sm text-text-secondary">{stocks.data.totalElements} instrument{stocks.data.totalElements === 1 ? "" : "s"}</p>

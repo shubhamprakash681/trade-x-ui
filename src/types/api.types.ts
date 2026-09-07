@@ -186,13 +186,13 @@ export interface OrderResponse {
 
 // ─── Transactions ─────────────────────────────────────────────────────────────
 
-export type TransactionType = "CREDIT" | "DEBIT";
+export type TransactionType = "BUY" | "SELL";
 
 export interface TransactionResponse {
   id: number;
+  orderId: number;
   type: TransactionType;
   amount: number;
-  balanceAfter: number;
   description: string;
   createdAt: string;
 }
