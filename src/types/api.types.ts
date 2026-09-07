@@ -156,6 +156,11 @@ export interface HoldingResponse {
   todayPnlPercent: number;
 }
 
+export interface PortfolioResponse {
+  summary: PortfolioSummaryResponse;
+  holdings: HoldingResponse[];
+}
+
 // ─── Orders ───────────────────────────────────────────────────────────────────
 
 export type OrderSide = "BUY" | "SELL";
@@ -163,18 +168,18 @@ export type OrderStatus = "EXECUTED";
 
 export interface OrderRequest {
   symbol: string;
-  side: OrderSide;
   quantity: number;
 }
 
 export interface OrderResponse {
   id: number;
+  userId: number;
   symbol: string;
   stockName: string;
   side: OrderSide;
   quantity: number;
   price: number;
-  amount: number;
+  totalAmount: number;
   status: OrderStatus;
   createdAt: string;
 }
