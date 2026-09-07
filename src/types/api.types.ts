@@ -79,9 +79,10 @@ export interface PasswordResetRequest {
 export interface StockResponse {
   symbol: string;
   name: string;
+  exchange: string;
   sector: string;
   referencePrice: number;
-  createdAt: string;
+  synthetic: boolean;
 }
 
 export interface CandleResponse {
@@ -110,7 +111,7 @@ export interface MarketTrendResponse {
   name: string;
   price: number;
   changePercent: number;
-  trendScore: number;
+  score: number;
   reason: string;
   asOf: string;
 }
@@ -240,7 +241,7 @@ export interface DashboardResponse {
   watchlist: WatchlistResponse[];
   alerts: AlertResponse[];
   notifications: NotificationResponse[];
-  gainers: MarketMoverResponse[];
-  losers: MarketMoverResponse[];
-  trending: MarketTrendResponse[];
+  topGainers: MarketMoverResponse[];
+  topLosers: MarketMoverResponse[];
+  trendingStocks: MarketTrendResponse[];
 }

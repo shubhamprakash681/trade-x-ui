@@ -51,8 +51,12 @@ export const authApi = {
     apiClient.put<void>("/api/users/password", data).then((r) => r.data),
 
   requestPasswordRecovery: (data: PasswordRecoveryRequest) =>
-    apiClient.post<void>("/api/auth/forgot-password", data).then((r) => r.data),
+    apiClient
+      .post<void>("/api/auth/password-recovery/request", data)
+      .then((r) => r.data),
 
   resetPassword: (data: PasswordResetRequest) =>
-    apiClient.post<void>("/api/auth/reset-password", data).then((r) => r.data),
+    apiClient
+      .post<void>("/api/auth/password-recovery/reset", data)
+      .then((r) => r.data),
 };
