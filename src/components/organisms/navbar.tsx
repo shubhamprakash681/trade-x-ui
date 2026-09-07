@@ -56,7 +56,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border-primary bg-bg-secondary/80 px-4 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border-primary bg-bg-secondary/80 px-4 backdrop-blur-sm select-none">
       {/* Left section */}
       <div className="flex items-center gap-4">
         <button

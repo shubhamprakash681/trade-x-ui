@@ -49,7 +49,7 @@ export function PublicNavbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-200",
+        "sticky top-0 z-40 w-full transition-all duration-200 select-none",
         scrolled
           ? "border-b border-border-primary bg-bg-primary/90 backdrop-blur-md shadow-sm"
           : "border-b border-border-primary/50 bg-bg-primary/60 backdrop-blur-sm",
