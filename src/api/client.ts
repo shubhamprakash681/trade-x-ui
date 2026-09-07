@@ -45,6 +45,10 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      // Let the browser add the multipart boundary required by Spring's parser.
+      config.headers.delete("Content-Type");
+    }
     const token = getAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
