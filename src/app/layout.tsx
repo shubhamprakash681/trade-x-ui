@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToastProvider } from "@/components/atoms/toast";
+
+export const viewport: Viewport = { themeColor: "#080b18" };
 
 export const metadata: Metadata = {
   title: "TradeX — Paper Trading Platform",
