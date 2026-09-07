@@ -112,39 +112,43 @@ export function MarketTicker() {
         </div>
 
         {/* Responsive Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
           {TICKER_DATA.map((ticker) => (
             <Link
               key={ticker.symbol}
               href="/markets"
-              className="group flex flex-col justify-between rounded-xl border border-border-primary bg-bg-primary p-3.5 shadow-xs transition-all hover:border-brand/50 hover:shadow-md"
+              className="group flex flex-col justify-between rounded-xl border border-border-primary bg-bg-primary p-3 sm:p-3.5 shadow-xs transition-all hover:border-brand/50 hover:shadow-md min-w-0"
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm text-text-primary group-hover:text-brand transition-colors">
+              <div className="flex items-start justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-bold text-sm text-text-primary group-hover:text-brand transition-colors truncate">
                       {ticker.symbol}
                     </span>
-                    <span className="rounded bg-bg-tertiary px-1 py-0.2 text-[9px] font-semibold text-text-tertiary">
+                    <span className="rounded bg-bg-tertiary px-1 py-0.2 text-[9px] font-semibold text-text-tertiary shrink-0">
                       {ticker.type}
                     </span>
                   </div>
-                  <p className="text-[11px] text-text-tertiary truncate max-w-[120px]">{ticker.name}</p>
+                  <p className="text-[11px] text-text-tertiary truncate">{ticker.name}</p>
                 </div>
 
                 <div
-                  className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-semibold ${
+                  className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-semibold shrink-0 ${
                     ticker.isPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
                   }`}
                 >
-                  {ticker.isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                  {ticker.isPositive ? (
+                    <TrendingUp className="h-3 w-3 shrink-0" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 shrink-0" />
+                  )}
                   <span>{ticker.percent}</span>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-baseline justify-between">
-                <span className="text-base font-bold text-text-primary">{ticker.price}</span>
-                <span className={`text-[11px] font-medium ${ticker.isPositive ? "text-profit" : "text-loss"}`}>
+              <div className="mt-3 flex items-baseline justify-between gap-2 min-w-0">
+                <span className="text-base font-bold text-text-primary truncate">{ticker.price}</span>
+                <span className={`text-[11px] font-medium shrink-0 ${ticker.isPositive ? "text-profit" : "text-loss"}`}>
                   {ticker.change}
                 </span>
               </div>

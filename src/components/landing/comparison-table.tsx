@@ -61,41 +61,41 @@ export function ComparisonTable() {
           <span className="rounded-full border border-brand/20 bg-brand/10 px-3.5 py-1 text-xs font-semibold text-brand uppercase tracking-wider">
             Why Paper Trade First
           </span>
-          <h2 className="text-3xl font-extrabold text-text-primary sm:text-4xl tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
             TradeX vs Live Broker Trading
           </h2>
-          <p className="text-base text-text-secondary">
+          <p className="text-sm sm:text-base text-text-secondary">
             Why smart traders build their edge on TradeX before putting real money on the line.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border-primary bg-bg-primary shadow-lg">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+        <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-border-primary bg-bg-primary shadow-lg">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full min-w-[540px] text-left text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-border-primary bg-bg-secondary text-text-primary">
-                  <th className="py-4 px-6 font-semibold">Aspect</th>
-                  <th className="py-4 px-6 font-bold text-brand bg-brand/5 border-x border-border-primary">
+                  <th className="py-3 px-4 sm:py-4 sm:px-6 font-semibold">Aspect</th>
+                  <th className="py-3 px-4 sm:py-4 sm:px-6 font-bold text-brand bg-brand/5 border-x border-border-primary">
                     TradeX Paper Trading
                   </th>
-                  <th className="py-4 px-6 font-semibold text-text-secondary">Real Money Broker</th>
+                  <th className="py-3 px-4 sm:py-4 sm:px-6 font-semibold text-text-secondary">Real Money Broker</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-primary">
                 {COMPARISON_ROWS.map((row) => (
                   <tr key={row.feature} className="transition-colors hover:bg-bg-secondary/40">
-                    <td className="py-4 px-6 font-medium text-text-primary">{row.feature}</td>
+                    <td className="py-3 px-4 sm:py-4 sm:px-6 font-medium text-text-primary">{row.feature}</td>
 
                     {/* TradeX column */}
-                    <td className="py-4 px-6 bg-brand/5 border-x border-border-primary font-medium">
+                    <td className="py-3 px-4 sm:py-4 sm:px-6 bg-brand/5 border-x border-border-primary font-medium">
                       <div className="flex items-center gap-2">
                         {row.tradeXPositive ? (
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-profit-bg text-profit">
-                            <Check className="h-3.5 w-3.5" />
+                          <div className="flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-profit-bg text-profit">
+                            <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </div>
                         ) : (
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-loss-bg text-loss">
-                            <X className="h-3.5 w-3.5" />
+                          <div className="flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-loss-bg text-loss">
+                            <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </div>
                         )}
                         <span className="text-text-primary">{row.tradeX}</span>
@@ -103,15 +103,15 @@ export function ComparisonTable() {
                     </td>
 
                     {/* Live Broker column */}
-                    <td className="py-4 px-6 text-text-secondary">
+                    <td className="py-3 px-4 sm:py-4 sm:px-6 text-text-secondary">
                       <div className="flex items-center gap-2">
                         {row.liveBrokerPositive ? (
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-profit-bg text-profit">
-                            <Check className="h-3.5 w-3.5" />
+                          <div className="flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-profit-bg text-profit">
+                            <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </div>
                         ) : (
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-loss-bg text-loss">
-                            <X className="h-3.5 w-3.5" />
+                          <div className="flex h-4.5 w-4.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-loss-bg text-loss">
+                            <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </div>
                         )}
                         <span>{row.liveBroker}</span>

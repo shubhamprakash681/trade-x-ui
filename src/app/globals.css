@@ -5,78 +5,78 @@
 /* Light mode (default) */
 :root {
   /* Brand */
-  --brand-primary: #6366F1;
-  --brand-primary-hover: #4F46E5;
-  --brand-secondary: #0EA5E9;
-  --brand-accent: #8B5CF6;
+  --brand-primary: #6366f1;
+  --brand-primary-hover: #4f46e5;
+  --brand-secondary: #0ea5e9;
+  --brand-accent: #8b5cf6;
 
   /* Semantic / Financial */
-  --color-profit: #10B981;
-  --color-profit-bg: #ECFDF5;
-  --color-loss: #EF4444;
-  --color-loss-bg: #FEF2F2;
-  --color-warning: #F59E0B;
-  --color-warning-bg: #FFFBEB;
-  --color-info: #3B82F6;
+  --color-profit: #10b981;
+  --color-profit-bg: #ecfdf5;
+  --color-loss: #ef4444;
+  --color-loss-bg: #fef2f2;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-info: #3b82f6;
 
   /* Surfaces */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F8FAFC;
-  --bg-tertiary: #F1F5F9;
-  --bg-elevated: #FFFFFF;
-  --border-primary: #E2E8F0;
-  --border-secondary: #CBD5E1;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
 
   /* Text */
-  --text-primary: #0F172A;
+  --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-tertiary: #94A3B8;
-  --text-inverse: #FFFFFF;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
 
   /* Chart */
-  --chart-line: #6366F1;
-  --chart-candle-up: #10B981;
-  --chart-candle-down: #EF4444;
-  --chart-volume: #94A3B8;
-  --chart-grid: #E2E8F0;
-  --chart-crosshair: #64748B;
+  --chart-line: #6366f1;
+  --chart-candle-up: #10b981;
+  --chart-candle-down: #ef4444;
+  --chart-volume: #94a3b8;
+  --chart-grid: #e2e8f0;
+  --chart-crosshair: #64748b;
 
   /* Gradients */
-  --gradient-brand: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #0EA5E9 100%);
-  --gradient-profit: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  --gradient-surface: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #0ea5e9 100%);
+  --gradient-profit: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-surface: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
 /* Dark mode */
 .dark {
-  --brand-primary: #818CF8;
-  --brand-primary-hover: #6366F1;
-  --brand-secondary: #38BDF8;
-  --brand-accent: #A78BFA;
+  --brand-primary: #818cf8;
+  --brand-primary-hover: #6366f1;
+  --brand-secondary: #38bdf8;
+  --brand-accent: #a78bfa;
 
-  --color-profit: #34D399;
-  --color-profit-bg: #064E3B;
-  --color-loss: #F87171;
-  --color-loss-bg: #7F1D1D;
-  --color-warning: #FBBF24;
-  --color-warning-bg: #78350F;
-  --color-info: #60A5FA;
+  --color-profit: #34d399;
+  --color-profit-bg: #064e3b;
+  --color-loss: #f87171;
+  --color-loss-bg: #7f1d1d;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #78350f;
+  --color-info: #60a5fa;
 
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
-  --bg-elevated: #1E293B;
+  --bg-elevated: #1e293b;
   --border-primary: #334155;
   --border-secondary: #475569;
 
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-tertiary: #64748B;
-  --text-inverse: #0F172A;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
 
-  --chart-grid: #1E293B;
+  --chart-grid: #1e293b;
 
-  --gradient-surface: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
 }
 
 /* ─── Tailwind Theme Tokens ────────────────────────────────────────────────── */
@@ -134,12 +134,14 @@ html {
 html,
 body {
   min-height: 100%;
+  overflow-x: clip;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  overflow-x: clip;
 }
 
 button,

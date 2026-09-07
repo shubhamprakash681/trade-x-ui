@@ -9,35 +9,35 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="py-8 sm:py-12">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+    <div className="py-8 sm:py-12 w-full min-w-0">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 w-full min-w-0">
         {/* Back Link */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link
             href="/"
             className="inline-flex items-center text-sm font-medium text-brand hover:underline transition-colors"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 h-4 w-4 shrink-0" />
             Back to Home
           </Link>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8 min-w-0">
           {/* Header */}
-          <div className="space-y-3 border-b border-border-primary pb-6">
-            <h1 className="text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl">
+          <div className="space-y-2 sm:space-y-3 border-b border-border-primary pb-5 sm:pb-6 min-w-0">
+            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-text-primary break-words">
               TradeX Privacy Policy
             </h1>
-            <p className="text-sm text-text-tertiary">
+            <p className="text-xs sm:text-sm text-text-tertiary">
               Last Updated: <span className="text-text-secondary">September 2026</span>
             </p>
           </div>
 
           {/* Privacy statement banner */}
-          <div className="rounded-xl border border-border-primary bg-bg-secondary p-5">
-            <div className="flex items-start gap-3">
+          <div className="rounded-xl border border-border-primary bg-bg-secondary p-4 sm:p-5 min-w-0">
+            <div className="flex items-start gap-3 min-w-0">
               <Lock className="h-5 w-5 shrink-0 text-brand mt-0.5" />
-              <p className="text-xs sm:text-sm leading-relaxed text-text-secondary">
+              <p className="text-xs sm:text-sm leading-relaxed text-text-secondary min-w-0 flex-1">
                 At <strong className="text-text-primary">TradeX</strong>, we respect and protect your privacy. This
                 Privacy Policy explains how we collect, use, and safeguard your information when you use our
                 paper-trading platform and associated services.
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* Body Sections */}
-          <div className="prose prose-slate dark:prose-invert max-w-none space-y-8 text-sm sm:text-base leading-relaxed text-text-secondary">
+          <div className="prose prose-slate dark:prose-invert max-w-none space-y-6 sm:space-y-8 text-xs sm:text-base leading-relaxed text-text-secondary min-w-0 break-words">
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-text-primary">1. Information We Collect</h2>
               <h3 className="text-base font-semibold text-text-primary">1.1. Personal Data</h3>
@@ -151,7 +151,10 @@ export default function PrivacyPage() {
                 <strong className="text-text-primary">Developer:</strong> Shubham Prakash
                 <br />
                 <strong className="text-text-primary">Email:</strong>{" "}
-                <a href="mailto:shubhamprakash681@gmail.com" className="text-brand hover:underline font-medium">
+                <a
+                  href="mailto:shubhamprakash681@gmail.com"
+                  className="text-brand hover:underline font-medium break-all"
+                >
                   shubhamprakash681@gmail.com
                 </a>
               </p>

@@ -69,27 +69,27 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
+    <section className="relative overflow-hidden pt-10 pb-16 md:pt-20 md:pb-28 w-full min-w-0">
       {/* Background glowing gradients */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-brand/15 blur-[120px] dark:bg-brand/10" />
-      <div className="pointer-events-none absolute top-1/2 right-0 -z-10 h-[400px] w-[500px] rounded-full bg-brand-secondary/15 blur-[120px] dark:bg-brand-secondary/10" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[350px] w-[500px] sm:h-[500px] sm:w-[700px] -translate-x-1/2 rounded-full bg-brand/15 blur-[120px] dark:bg-brand/10" />
+      <div className="pointer-events-none absolute top-1/2 right-0 -z-10 h-[300px] w-[350px] sm:h-[400px] sm:w-[500px] rounded-full bg-brand-secondary/15 blur-[120px] dark:bg-brand-secondary/10" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full min-w-0">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8 w-full min-w-0">
           {/* Left Column: Hero Pitch & CTAs */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-left min-w-0">
             {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-border-primary bg-bg-secondary px-3.5 py-1.5 text-xs font-medium text-text-primary shadow-xs">
-              <span className="flex h-2 w-2 rounded-full bg-profit animate-pulse" />
+            <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border border-border-primary bg-bg-secondary px-3 py-1.5 text-[11px] sm:text-xs font-medium text-text-primary shadow-xs">
+              <span className="flex h-2 w-2 rounded-full bg-profit animate-pulse shrink-0" />
               <span className="text-text-secondary">Simulated Stock Market</span>
-              <span className="text-border-secondary">|</span>
-              <span className="font-semibold text-brand flex items-center gap-1">
+              <span className="hidden sm:inline text-border-secondary">|</span>
+              <span className="font-semibold text-brand flex items-center gap-1 shrink-0">
                 <Sparkles className="h-3 w-3" /> 100% Risk-Free
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl font-extrabold tracking-tight text-text-primary sm:text-5xl lg:text-6xl leading-[1.15]">
+            <h1 className="text-3xl font-extrabold tracking-tight text-text-primary sm:text-5xl lg:text-6xl leading-tight sm:leading-[1.15] break-words">
               Master Stock Trading Without Risking a{" "}
               <span className="bg-gradient-to-r from-brand via-brand-accent to-brand-secondary bg-clip-text text-transparent">
                 Single Rupee
@@ -97,7 +97,7 @@ export function HeroSection() {
             </h1>
 
             {/* Subheading */}
-            <p className="mx-auto max-w-2xl text-lg text-text-secondary sm:text-xl lg:mx-0 leading-relaxed">
+            <p className="mx-auto max-w-2xl text-base text-text-secondary sm:text-xl lg:mx-0 leading-relaxed">
               Trade simulated Indian and global stocks with{" "}
               <strong className="text-text-primary font-semibold">₹10,00,000</strong> in virtual capital. Real-time
               market data, institutional candlestick charts, and instant order matching inspired by Groww, INDmoney, and
@@ -105,67 +105,71 @@ export function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full">
               <Link href={isAuthenticated ? "/dashboard" : "/register"} className="w-full sm:w-auto">
-                <Button size="lg" variant="primary" className="w-full sm:w-auto px-8 gap-2 shadow-lg shadow-brand/20">
+                <Button
+                  size="lg"
+                  variant="primary"
+                  className="w-full sm:w-auto px-6 sm:px-8 gap-2 shadow-lg shadow-brand/20"
+                >
                   <span>{isAuthenticated ? "Go to Dashboard" : "Start Paper Trading Free"}</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </Button>
               </Link>
               <Link href="#markets" className="w-full sm:w-auto">
-                <Button size="lg" variant="secondary" className="w-full sm:w-auto px-8">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto px-6 sm:px-8">
                   Explore Live Tickers
                 </Button>
               </Link>
             </div>
 
             {/* Trust / Metric Badges */}
-            <div className="pt-6 border-t border-border-primary/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="flex flex-col items-center lg:items-start">
-                <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
-                  <DollarSign className="h-3.5 w-3.5 text-brand" />
-                  <span>Virtual Capital</span>
+            <div className="pt-6 border-t border-border-primary/80 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              <div className="flex flex-col items-center lg:items-start min-w-0">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-text-tertiary">
+                  <DollarSign className="h-3.5 w-3.5 text-brand shrink-0" />
+                  <span className="truncate">Virtual Capital</span>
                 </div>
-                <span className="text-lg font-bold text-text-primary">₹10 Lakhs</span>
+                <span className="text-base sm:text-lg font-bold text-text-primary">₹10 Lakhs</span>
               </div>
 
-              <div className="flex flex-col items-center lg:items-start">
-                <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
-                  <Zap className="h-3.5 w-3.5 text-warning" />
-                  <span>Latency</span>
+              <div className="flex flex-col items-center lg:items-start min-w-0">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-text-tertiary">
+                  <Zap className="h-3.5 w-3.5 text-warning shrink-0" />
+                  <span className="truncate">Latency</span>
                 </div>
-                <span className="text-lg font-bold text-text-primary">Real-Time</span>
+                <span className="text-base sm:text-lg font-bold text-text-primary">Real-Time</span>
               </div>
 
-              <div className="flex flex-col items-center lg:items-start">
-                <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
-                  <ShieldCheck className="h-3.5 w-3.5 text-profit" />
-                  <span>Broker KYC</span>
+              <div className="flex flex-col items-center lg:items-start min-w-0">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-text-tertiary">
+                  <ShieldCheck className="h-3.5 w-3.5 text-profit shrink-0" />
+                  <span className="truncate">Broker KYC</span>
                 </div>
-                <span className="text-lg font-bold text-text-primary">Zero KYC</span>
+                <span className="text-base sm:text-lg font-bold text-text-primary">Zero KYC</span>
               </div>
 
-              <div className="flex flex-col items-center lg:items-start">
-                <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-brand-secondary" />
-                  <span>Cost</span>
+              <div className="flex flex-col items-center lg:items-start min-w-0">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-text-tertiary">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-brand-secondary shrink-0" />
+                  <span className="truncate">Cost</span>
                 </div>
-                <span className="text-lg font-bold text-text-primary">100% Free</span>
+                <span className="text-base sm:text-lg font-bold text-text-primary">100% Free</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: High-Fidelity Interactive Trading Mockup */}
-          <div className="lg:col-span-5">
-            <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-border-primary bg-bg-secondary p-5 shadow-2xl backdrop-blur-xl">
+          <div className="lg:col-span-5 w-full min-w-0">
+            <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-border-primary bg-bg-secondary p-3.5 sm:p-5 shadow-2xl backdrop-blur-xl min-w-0">
               {/* Card Header & Stock Switcher */}
-              <div className="flex items-center justify-between border-b border-border-primary pb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-primary pb-3">
+                <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full py-0.5">
                   {DEMO_STOCKS.map((s) => (
                     <button
                       key={s.symbol}
                       onClick={() => setSelectedStock(s)}
-                      className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                      className={`rounded-lg px-2 py-1 text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${
                         selectedStock.symbol === s.symbol
                           ? "bg-brand text-white shadow-xs"
                           : "bg-bg-primary text-text-secondary hover:text-text-primary border border-border-primary"
@@ -175,24 +179,24 @@ export function HeroSection() {
                     </button>
                   ))}
                 </div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-profit-bg px-2 py-0.5 text-[11px] font-semibold text-profit">
+                <span className="inline-flex items-center gap-1 rounded-full bg-profit-bg px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold text-profit shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
                   MARKET OPEN
                 </span>
               </div>
 
               {/* Price & Trend Header */}
-              <div className="mt-4 flex items-baseline justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-text-primary">{selectedStock.price}</h3>
-                  <p className="text-xs text-text-tertiary">{selectedStock.name}</p>
+              <div className="mt-3 sm:mt-4 flex flex-wrap items-baseline justify-between gap-2">
+                <div className="min-w-0">
+                  <h3 className="text-xl sm:text-2xl font-bold text-text-primary">{selectedStock.price}</h3>
+                  <p className="text-[11px] sm:text-xs text-text-tertiary truncate">{selectedStock.name}</p>
                 </div>
                 <div
-                  className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold ${
+                  className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold shrink-0 ${
                     selectedStock.isPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
                   }`}
                 >
-                  <ChevronUp className={`h-3.5 w-3.5 ${!selectedStock.isPositive ? "rotate-180" : ""}`} />
+                  <ChevronUp className={`h-3.5 w-3.5 shrink-0 ${!selectedStock.isPositive ? "rotate-180" : ""}`} />
                   <span>
                     {selectedStock.change} ({selectedStock.changePercent})
                   </span>
@@ -200,7 +204,7 @@ export function HeroSection() {
               </div>
 
               {/* Simulated Lightweight Area Chart Sparkline */}
-              <div className="mt-4 h-28 w-full overflow-hidden rounded-xl border border-border-primary bg-bg-primary/70 p-2">
+              <div className="mt-3 sm:mt-4 h-24 sm:h-28 w-full overflow-hidden rounded-xl border border-border-primary bg-bg-primary/70 p-1.5 sm:p-2">
                 <svg viewBox="0 0 300 80" className="h-full w-full overflow-visible" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
@@ -226,28 +230,34 @@ export function HeroSection() {
               </div>
 
               {/* Stats Bar */}
-              <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="rounded-lg bg-bg-primary p-2 border border-border-primary">
-                  <span className="block text-[10px] text-text-tertiary">24h High</span>
-                  <span className="font-semibold text-text-primary">{selectedStock.high}</span>
+              <div className="mt-2.5 sm:mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-xs">
+                <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
+                  <span className="block text-[9px] sm:text-[10px] text-text-tertiary">24h High</span>
+                  <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
+                    {selectedStock.high}
+                  </span>
                 </div>
-                <div className="rounded-lg bg-bg-primary p-2 border border-border-primary">
-                  <span className="block text-[10px] text-text-tertiary">24h Low</span>
-                  <span className="font-semibold text-text-primary">{selectedStock.low}</span>
+                <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
+                  <span className="block text-[9px] sm:text-[10px] text-text-tertiary">24h Low</span>
+                  <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
+                    {selectedStock.low}
+                  </span>
                 </div>
-                <div className="rounded-lg bg-bg-primary p-2 border border-border-primary">
-                  <span className="block text-[10px] text-text-tertiary">Volume</span>
-                  <span className="font-semibold text-text-primary">{selectedStock.volume}</span>
+                <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
+                  <span className="block text-[9px] sm:text-[10px] text-text-tertiary">Volume</span>
+                  <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
+                    {selectedStock.volume}
+                  </span>
                 </div>
               </div>
 
               {/* Quick Trade Simulation Box */}
-              <div className="mt-4 rounded-xl border border-border-primary bg-bg-primary p-3">
-                <div className="flex items-center justify-between mb-3">
+              <div className="mt-3 sm:mt-4 rounded-xl border border-border-primary bg-bg-primary p-2.5 sm:p-3 min-w-0">
+                <div className="flex items-center justify-between mb-2.5">
                   <div className="flex rounded-lg bg-bg-secondary p-0.5 border border-border-primary">
                     <button
                       onClick={() => setOrderSide("BUY")}
-                      className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors ${
                         orderSide === "BUY" ? "bg-profit text-white" : "text-text-secondary hover:text-text-primary"
                       }`}
                     >
@@ -255,24 +265,24 @@ export function HeroSection() {
                     </button>
                     <button
                       onClick={() => setOrderSide("SELL")}
-                      className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
+                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors ${
                         orderSide === "SELL" ? "bg-loss text-white" : "text-text-secondary hover:text-text-primary"
                       }`}
                     >
                       Sell (Short)
                     </button>
                   </div>
-                  <span className="text-[11px] text-text-tertiary">Market Order</span>
+                  <span className="text-[10px] sm:text-[11px] text-text-tertiary">Market Order</span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-text-secondary">Quantity:</span>
+                  <span className="text-[11px] sm:text-xs text-text-secondary">Quantity:</span>
                   <div className="flex gap-1">
                     {[1, 5, 10, 25].map((qty) => (
                       <button
                         key={qty}
                         onClick={() => setDemoOrderQty(qty)}
-                        className={`rounded px-2 py-0.5 text-xs font-medium border ${
+                        className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium border ${
                           demoOrderQty === qty
                             ? "border-brand bg-brand/10 text-brand"
                             : "border-border-primary text-text-secondary hover:text-text-primary"
@@ -286,7 +296,7 @@ export function HeroSection() {
 
                 <button
                   onClick={handleSimulateTrade}
-                  className={`w-full rounded-lg py-2.5 text-xs font-bold text-white transition-all cursor-pointer ${
+                  className={`w-full rounded-lg py-2 sm:py-2.5 text-xs font-bold text-white transition-all cursor-pointer truncate px-2 ${
                     orderSide === "BUY" ? "bg-profit hover:opacity-90" : "bg-loss hover:opacity-90"
                   }`}
                 >
@@ -294,19 +304,19 @@ export function HeroSection() {
                 </button>
 
                 {simulatedSuccess && (
-                  <div className="mt-2.5 rounded-lg border border-profit/30 bg-profit-bg p-2 text-center text-xs font-semibold text-profit animate-fadeIn">
+                  <div className="mt-2 rounded-lg border border-profit/30 bg-profit-bg p-1.5 text-center text-[11px] font-semibold text-profit">
                     ✓ Simulated Order Filled: {orderSide} {demoOrderQty} {selectedStock.symbol} executed!
                   </div>
                 )}
               </div>
 
               {/* Floating notification badge */}
-              <div className="mt-3 flex items-center justify-between text-[11px] text-text-tertiary">
-                <span className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3 text-profit" />
-                  Simulated Portfolio: ₹10,24,580.00
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-text-tertiary">
+                <span className="flex items-center gap-1 truncate">
+                  <TrendingUp className="h-3 w-3 shrink-0 text-profit" />
+                  Portfolio: ₹10,24,580.00
                 </span>
-                <span className="font-medium text-profit">+₹24,580.00 (+2.45%)</span>
+                <span className="font-medium text-profit shrink-0">+₹24,580.00 (+2.45%)</span>
               </div>
             </div>
           </div>

@@ -57,34 +57,34 @@ export function InteractivePreview() {
     <section className="py-20 bg-bg-secondary/40 border-t border-border-primary">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Title */}
-        <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12 space-y-3">
           <span className="rounded-full border border-brand-secondary/20 bg-brand-secondary/10 px-3.5 py-1 text-xs font-semibold text-brand-secondary uppercase tracking-wider">
             Interactive Product Tour
           </span>
-          <h2 className="text-3xl font-extrabold text-text-primary sm:text-4xl tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
             Designed for Speed, Engineered for Precision
           </h2>
-          <p className="text-base text-text-secondary">
+          <p className="text-sm sm:text-base text-text-secondary">
             Switch between core workflows to see how TradeX streamlines your trading routine.
           </p>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex justify-center mb-8 overflow-x-auto pb-2">
-          <div className="inline-flex rounded-xl bg-bg-secondary p-1 border border-border-primary gap-1">
+        <div className="flex overflow-x-auto pb-2 mb-8 justify-start sm:justify-center -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="inline-flex rounded-xl bg-bg-secondary p-1 border border-border-primary gap-1 shrink-0">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
                       ? "bg-brand text-white shadow-sm"
                       : "text-text-secondary hover:text-text-primary hover:bg-bg-tertiary"
                   }`}
                 >
-                  <tab.icon className="h-4 w-4" />
+                  <tab.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -93,46 +93,46 @@ export function InteractivePreview() {
         </div>
 
         {/* Tab Content Display Container */}
-        <div className="rounded-2xl border border-border-primary bg-bg-secondary p-6 sm:p-8 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="rounded-xl sm:rounded-2xl border border-border-primary bg-bg-secondary p-4 sm:p-8 shadow-xl min-w-0 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center min-w-0">
             {/* Explanatory side */}
-            <div className="lg:col-span-4 space-y-4">
-              <h3 className="text-2xl font-bold text-text-primary">{currentTab.title}</h3>
-              <p className="text-sm leading-relaxed text-text-secondary">{currentTab.subtitle}</p>
+            <div className="lg:col-span-4 space-y-3 sm:space-y-4 min-w-0">
+              <h3 className="text-xl sm:text-2xl font-bold text-text-primary">{currentTab.title}</h3>
+              <p className="text-xs sm:text-sm leading-relaxed text-text-secondary">{currentTab.subtitle}</p>
 
               <div className="space-y-2 pt-2 text-xs text-text-secondary">
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-profit" />
+                  <Check className="h-4 w-4 shrink-0 text-profit" />
                   <span>Zero lag simulated quote streaming</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-profit" />
+                  <Check className="h-4 w-4 shrink-0 text-profit" />
                   <span>Interactive zoom and responsive layouts</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-profit" />
+                  <Check className="h-4 w-4 shrink-0 text-profit" />
                   <span>Full Light and Dark theme compatibility</span>
                 </div>
               </div>
             </div>
 
             {/* Interactive Mock Display */}
-            <div className="lg:col-span-8 rounded-xl border border-border-primary bg-bg-primary p-5 shadow-inner">
+            <div className="lg:col-span-8 rounded-lg sm:rounded-xl border border-border-primary bg-bg-primary p-3 sm:p-5 shadow-inner min-w-0">
               {activeTab === "charts" && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-border-primary pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-base text-text-primary">TCS</span>
-                      <span className="text-xs text-text-tertiary">Tata Consultancy</span>
-                      <span className="rounded bg-profit-bg px-2 py-0.5 text-xs font-semibold text-profit">
+                <div className="space-y-3 sm:space-y-4 min-w-0">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-primary pb-3 min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+                      <span className="font-bold text-sm sm:text-base text-text-primary">TCS</span>
+                      <span className="text-xs text-text-tertiary hidden xs:inline">Tata Consultancy</span>
+                      <span className="rounded bg-profit-bg px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold text-profit">
                         +₹45.60 (+1.12%)
                       </span>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 shrink-0">
                       {["1D", "1W", "1M", "1Y", "ALL"].map((period) => (
                         <span
                           key={period}
-                          className={`rounded px-2 py-0.5 text-[11px] font-medium ${
+                          className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium ${
                             period === "1D" ? "bg-brand text-white" : "text-text-tertiary hover:text-text-primary"
                           }`}
                         >
@@ -215,31 +215,31 @@ export function InteractivePreview() {
               )}
 
               {activeTab === "portfolio" && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-lg bg-bg-secondary p-3 border border-border-primary">
-                      <span className="text-[11px] text-text-tertiary">Total Portfolio</span>
-                      <p className="text-base font-bold text-text-primary">₹10,54,320.00</p>
+                <div className="space-y-4 min-w-0">
+                  <div className="grid grid-cols-1 min-[440px]:grid-cols-3 gap-2.5 sm:gap-3">
+                    <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
+                      <span className="text-[10px] sm:text-[11px] text-text-tertiary">Total Portfolio</span>
+                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">₹10,54,320.00</p>
                     </div>
-                    <div className="rounded-lg bg-bg-secondary p-3 border border-border-primary">
-                      <span className="text-[11px] text-text-tertiary">Invested Amount</span>
-                      <p className="text-base font-bold text-text-primary">₹6,80,000.00</p>
+                    <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
+                      <span className="text-[10px] sm:text-[11px] text-text-tertiary">Invested Amount</span>
+                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">₹6,80,000.00</p>
                     </div>
-                    <div className="rounded-lg bg-bg-secondary p-3 border border-border-primary">
-                      <span className="text-[11px] text-text-tertiary">Total Returns</span>
-                      <p className="text-base font-bold text-profit">+₹54,320.00 (+7.98%)</p>
+                    <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
+                      <span className="text-[10px] sm:text-[11px] text-text-tertiary">Total Returns</span>
+                      <p className="text-sm sm:text-base font-bold text-profit truncate">+₹54,320.00 (+7.98%)</p>
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full min-w-[340px] text-left text-xs">
                       <thead>
                         <tr className="border-b border-border-primary text-text-tertiary">
-                          <th className="pb-2">Stock</th>
-                          <th className="pb-2">Qty</th>
-                          <th className="pb-2">Avg. Buy</th>
-                          <th className="pb-2">LTP</th>
-                          <th className="pb-2 text-right">P&L</th>
+                          <th className="pb-2 font-medium">Stock</th>
+                          <th className="pb-2 font-medium">Qty</th>
+                          <th className="pb-2 font-medium">Avg. Buy</th>
+                          <th className="pb-2 font-medium">LTP</th>
+                          <th className="pb-2 text-right font-medium">P&L</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border-primary/50">
@@ -271,13 +271,13 @@ export function InteractivePreview() {
               )}
 
               {activeTab === "orders" && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-border-primary pb-3">
+                <div className="space-y-4 min-w-0">
+                  <div className="flex items-center justify-between border-b border-border-primary pb-3 min-w-0">
                     <span className="font-bold text-sm text-text-primary">Recent Simulated Orders</span>
                     <span className="text-xs text-text-tertiary">Real-time status matching</span>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-2.5 min-w-0">
                     {[
                       { id: "ORD-9281", stock: "RELIANCE", type: "BUY", qty: 25, price: "₹2,984.50", status: "FILLED" },
                       { id: "ORD-9280", stock: "INFY", type: "SELL", qty: 15, price: "₹1,842.15", status: "FILLED" },
@@ -285,28 +285,28 @@ export function InteractivePreview() {
                     ].map((order) => (
                       <div
                         key={order.id}
-                        className="flex items-center justify-between rounded-lg bg-bg-secondary p-3 border border-border-primary"
+                        className="flex items-center justify-between gap-2 rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                           <span
-                            className={`rounded px-2 py-0.5 text-xs font-bold ${
+                            className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold shrink-0 ${
                               order.type === "BUY" ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
                             }`}
                           >
                             {order.type}
                           </span>
-                          <div>
-                            <p className="font-semibold text-xs text-text-primary">{order.stock}</p>
-                            <p className="text-[10px] text-text-tertiary">{order.id} · Today, 11:42 AM</p>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-xs text-text-primary truncate">{order.stock}</p>
+                            <p className="text-[10px] text-text-tertiary truncate">{order.id} · Today, 11:42 AM</p>
                           </div>
                         </div>
 
-                        <div className="text-right">
+                        <div className="text-right shrink-0">
                           <p className="font-semibold text-xs text-text-primary">
-                            {order.qty} shares @ {order.price}
+                            {order.qty} sh @ {order.price}
                           </p>
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-profit">
-                            <Check className="h-3 w-3" /> {order.status}
+                            <Check className="h-3 w-3 shrink-0" /> {order.status}
                           </span>
                         </div>
                       </div>
@@ -316,15 +316,15 @@ export function InteractivePreview() {
               )}
 
               {activeTab === "alerts" && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-border-primary pb-3">
+                <div className="space-y-4 min-w-0">
+                  <div className="flex items-center justify-between border-b border-border-primary pb-3 min-w-0">
                     <span className="font-bold text-sm text-text-primary">Configured Price Triggers</span>
-                    <button className="inline-flex items-center gap-1 rounded-md bg-brand/10 px-2 py-1 text-xs font-medium text-brand">
+                    <button className="inline-flex items-center gap-1 rounded-md bg-brand/10 px-2 py-1 text-xs font-medium text-brand shrink-0">
                       <Plus className="h-3 w-3" /> New Alert
                     </button>
                   </div>
 
-                  <div className="space-y-2.5">
+                  <div className="space-y-2.5 min-w-0">
                     {[
                       { stock: "RELIANCE", condition: "Price crosses above", target: "₹3,000.00", active: true },
                       { stock: "TCS", condition: "Price crosses below", target: "₹4,050.00", active: true },
@@ -332,21 +332,21 @@ export function InteractivePreview() {
                     ].map((alert, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-between rounded-lg bg-bg-secondary p-3 border border-border-primary"
+                        className="flex items-center justify-between gap-2 rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-secondary/10 text-brand-secondary">
-                            <Bell className="h-4 w-4" />
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                          <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md bg-brand-secondary/10 text-brand-secondary">
+                            <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </div>
-                          <div>
-                            <p className="font-semibold text-xs text-text-primary">{alert.stock}</p>
-                            <p className="text-[11px] text-text-secondary">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-xs text-text-primary truncate">{alert.stock}</p>
+                            <p className="text-[10px] sm:text-[11px] text-text-secondary truncate">
                               {alert.condition} <span className="font-bold text-text-primary">{alert.target}</span>
                             </p>
                           </div>
                         </div>
 
-                        <span className="rounded-full bg-profit-bg px-2.5 py-0.5 text-[10px] font-bold text-profit">
+                        <span className="rounded-full bg-profit-bg px-2 sm:px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-profit shrink-0">
                           ACTIVE
                         </span>
                       </div>
