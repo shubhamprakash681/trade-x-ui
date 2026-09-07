@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "@/components/organisms/sidebar";
 import { Navbar } from "@/components/organisms/navbar";
+import { Footer } from "@/components/organisms/footer";
 
 interface AppShellProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ export function AppShell({ children }: AppShellProps) {
         <main id="main-content" className="flex-1 p-4 sm:p-5 lg:p-6">
           {children}
         </main>
+        <Footer />
       </div>
     </div>
   );

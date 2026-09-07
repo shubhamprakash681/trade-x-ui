@@ -27,7 +27,6 @@ export function Footer() {
           </div>
 
           {/* Col 2: Quick Links */}
-          {/* Col 2: Quick Links */}
           <div className="min-w-0">
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-text-primary">Quick Links</h3>
             <ul className="space-y-2.5 text-sm">
