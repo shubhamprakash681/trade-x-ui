@@ -16,7 +16,7 @@ import { Avatar } from "@/components/atoms/avatar";
 import { useAuthStore } from "@/store/auth.store";
 import { useThemeStore } from "@/store/theme.store";
 import { authApi } from "@/api/auth.api";
-import { getRefreshToken, clearTokens } from "@/api/client";
+import { getRefreshToken } from "@/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 
 const themeOptions = [

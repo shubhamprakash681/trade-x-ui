@@ -73,6 +73,12 @@ function processQueue(error: unknown, token: string | null = null) {
   failedQueue = [];
 }
 
+function notifyUnauthorized(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("tradex:unauthorized"));
+  }
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApiError>) => {
@@ -108,9 +114,7 @@ apiClient.interceptors.response.use(
     if (!refreshToken) {
       isRefreshing = false;
       clearTokens();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      notifyUnauthorized();
       return Promise.reject(error);
     }
 
@@ -131,9 +135,7 @@ apiClient.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       clearTokens();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      notifyUnauthorized();
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

@@ -8,8 +8,7 @@ import { getAccessToken, getRefreshToken } from "@/api/client";
 
 export function useAuthGuard() {
   const router = useRouter();
-  const { user, isAuthenticated, setAuth, setUser, setLoading, clearAuth } =
-    useAuthStore();
+  const { user, isAuthenticated, restoreAuth, clearAuth } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -28,36 +27,26 @@ export function useAuthGuard() {
       try {
         // Try fetching user with existing access token
         const userData = await authApi.getMe();
-        setUser(userData);
-        setLoading(false);
+        restoreAuth(userData);
         setIsReady(true);
       } catch {
-        // Access token expired — try refreshing
-        if (refreshToken) {
-          try {
-            const authData = await authApi.refresh(refreshToken);
-            setAuth(authData.user, authData.accessToken, authData.refreshToken);
-            setIsReady(true);
-          } catch {
-            // Refresh also failed — force re-login
-            clearAuth();
-            setIsReady(true);
-            router.replace("/login");
-          }
-        } else {
-          clearAuth();
-          setIsReady(true);
-          router.replace("/login");
-        }
+        // The API client attempts a refresh before this request rejects.
+        clearAuth();
+        setIsReady(true);
+        router.replace("/login");
       }
     }
 
-    if (!isAuthenticated) {
-      restoreSession();
-    } else {
-      setLoading(false);
+    const handleUnauthorized = () => {
+      clearAuth();
       setIsReady(true);
-    }
+      router.replace("/login");
+    };
+
+    window.addEventListener("tradex:unauthorized", handleUnauthorized);
+    void Promise.resolve().then(restoreSession);
+
+    return () => window.removeEventListener("tradex:unauthorized", handleUnauthorized);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
