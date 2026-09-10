@@ -1,70 +1,180 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, TrendingUp, ShieldCheck, Zap, DollarSign, CheckCircle2, Sparkles, ChevronUp } from "lucide-react";
+import {
+  ArrowRight,
+  TrendingUp,
+  TrendingDown,
+  ShieldCheck,
+  Zap,
+  DollarSign,
+  CheckCircle2,
+  Sparkles,
+  ChevronUp,
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/atoms/button";
 import { useAuthStore } from "@/store/auth.store";
+import { useStocks } from "@/hooks/use-stocks";
+import { useLivePrices } from "@/hooks/use-live-prices";
+import { pricesApi } from "@/api/prices.api";
+import { formatCurrency, formatPercent } from "@/lib/utils";
+import { useDemoTradingStore, INITIAL_DEMO_CASH } from "@/store/demo-trading.store";
+import type { PriceResponse } from "@/types/api.types";
 
-interface DemoStock {
+interface DemoStockItem {
   symbol: string;
   name: string;
-  price: string;
-  change: string;
-  changePercent: string;
-  isPositive: boolean;
-  high: string;
-  low: string;
-  volume: string;
+  referencePrice: number;
+  exchange: string;
+  sector: string;
 }
 
-const DEMO_STOCKS: DemoStock[] = [
+const FALLBACK_DEMO_STOCKS: DemoStockItem[] = [
   {
     symbol: "RELIANCE",
     name: "Reliance Industries Ltd",
-    price: "₹2,984.50",
-    change: "+₹68.20",
-    changePercent: "+2.34%",
-    isPositive: true,
-    high: "₹3,012.00",
-    low: "₹2,925.00",
-    volume: "14.2M",
+    referencePrice: 2940.1,
+    exchange: "NSE",
+    sector: "Energy",
   },
   {
     symbol: "TCS",
     name: "Tata Consultancy Services",
-    price: "₹4,120.80",
-    change: "+₹45.60",
-    changePercent: "+1.12%",
-    isPositive: true,
-    high: "₹4,160.00",
-    low: "₹4,080.00",
-    volume: "8.6M",
+    referencePrice: 3890.7,
+    exchange: "NSE",
+    sector: "Technology",
   },
   {
     symbol: "INFY",
     name: "Infosys Limited",
-    price: "₹1,842.15",
-    change: "-₹12.40",
-    changePercent: "-0.67%",
-    isPositive: false,
-    high: "₹1,865.00",
-    low: "₹1,830.00",
-    volume: "11.1M",
+    referencePrice: 1525.35,
+    exchange: "NSE",
+    sector: "Technology",
   },
 ];
 
 export function HeroSection() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const [selectedStock, setSelectedStock] = useState<DemoStock>(DEMO_STOCKS[0]);
+
+  const stocksQuery = useStocks(0, 4);
+  const latestPricesQuery = useQuery({
+    queryKey: ["prices", "latest"],
+    queryFn: pricesApi.getLatestPrices,
+    staleTime: 30_000,
+  });
+
+  const initialPricesMap = useMemo(() => {
+    const map: Record<string, PriceResponse> = {};
+    if (latestPricesQuery.data) {
+      for (const p of latestPricesQuery.data) {
+        map[p.symbol.toUpperCase()] = p;
+      }
+    }
+    return map;
+  }, [latestPricesQuery.data]);
+
+  const hasDynamicStocks = Boolean(stocksQuery.data?.content && stocksQuery.data.content.length > 0);
+
+  const stockList = useMemo<DemoStockItem[]>(() => {
+    if (hasDynamicStocks && stocksQuery.data) {
+      return stocksQuery.data.content.slice(0, 4).map((stock) => ({
+        symbol: stock.symbol,
+        name: stock.name,
+        referencePrice: stock.referencePrice,
+        exchange: stock.exchange,
+        sector: stock.sector,
+      }));
+    }
+    return FALLBACK_DEMO_STOCKS;
+  }, [hasDynamicStocks, stocksQuery.data]);
+
+  const cashBalance = useDemoTradingStore((s) => s.cashBalance);
+  const holdings = useDemoTradingStore((s) => s.holdings);
+  const executeTrade = useDemoTradingStore((s) => s.executeTrade);
+
+  const symbols = useMemo(() => {
+    const listSymbols = stockList.map((s) => s.symbol);
+    const holdingSymbols = Object.keys(holdings);
+    return Array.from(new Set([...listSymbols, ...holdingSymbols]));
+  }, [stockList, holdings]);
+  const livePrices = useLivePrices(symbols);
+
+  const [selectedSymbol, setSelectedSymbol] = useState<string>("RELIANCE");
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
   const [demoOrderQty, setDemoOrderQty] = useState(10);
-  const [simulatedSuccess, setSimulatedSuccess] = useState(false);
+  const [tradeFeedback, setTradeFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  const activeStock = useMemo(() => {
+    return stockList.find((s) => s.symbol.toUpperCase() === selectedSymbol.toUpperCase()) ?? stockList[0];
+  }, [stockList, selectedSymbol]);
+
+  const currentSym = activeStock.symbol.toUpperCase();
+  const liveData = livePrices[currentSym] ?? initialPricesMap[currentSym];
+  const currentPriceNum = liveData?.price ?? activeStock.referencePrice;
+  const currentChangeAmount = liveData?.changeAmount ?? 0;
+  const currentChangePercent = liveData?.changePercent ?? 0;
+  const isPositive = currentChangeAmount >= 0;
+
+  const formattedPrice = formatCurrency(currentPriceNum);
+  const formattedChange = `${currentChangeAmount >= 0 ? "+" : ""}${formatCurrency(currentChangeAmount).replace(
+    "₹",
+    "₹",
+  )}`;
+  const formattedPercent = formatPercent(currentChangePercent);
+
+  // Approximate 24h High & Low based on live price reference
+  const highPrice = formatCurrency(
+    liveData?.previousPrice && liveData.previousPrice > currentPriceNum
+      ? liveData.previousPrice * 1.01
+      : currentPriceNum * 1.015,
+  );
+  const lowPrice = formatCurrency(
+    liveData?.previousPrice && liveData.previousPrice < currentPriceNum
+      ? liveData.previousPrice * 0.99
+      : currentPriceNum * 0.985,
+  );
+  const stockExchange = activeStock.exchange || "NSE";
+
+  const portfolioHoldingsValue = useMemo(() => {
+    return Object.values(holdings).reduce((sum, h) => {
+      const sym = h.symbol.toUpperCase();
+      const price = livePrices[sym]?.price ?? initialPricesMap[sym]?.price ?? h.avgBuyPrice;
+      return sum + h.qty * price;
+    }, 0);
+  }, [holdings, livePrices, initialPricesMap]);
+
+  const totalPortfolioValue = cashBalance + portfolioHoldingsValue;
+  const portfolioReturn = totalPortfolioValue - INITIAL_DEMO_CASH;
+  const portfolioReturnPercent = (portfolioReturn / INITIAL_DEMO_CASH) * 100;
+  const isReturnPositive = portfolioReturn >= 0;
 
   function handleSimulateTrade() {
-    setSimulatedSuccess(true);
+    const result = executeTrade({
+      symbol: activeStock.symbol,
+      side: orderSide,
+      qty: demoOrderQty,
+      price: currentPriceNum,
+    });
+
+    if (result.success) {
+      setTradeFeedback({
+        type: "success",
+        message: `✓ Simulated Order Filled: ${orderSide} ${demoOrderQty} ${activeStock.symbol} at ${formattedPrice} executed!`,
+      });
+    } else {
+      setTradeFeedback({
+        type: "error",
+        message: result.message || "Failed to execute order",
+      });
+    }
+
     setTimeout(() => {
-      setSimulatedSuccess(false);
+      setTradeFeedback(null);
     }, 4000);
   }
 
@@ -165,12 +275,12 @@ export function HeroSection() {
               {/* Card Header & Stock Switcher */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-primary pb-3">
                 <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full py-0.5">
-                  {DEMO_STOCKS.map((s) => (
+                  {stockList.map((s) => (
                     <button
                       key={s.symbol}
-                      onClick={() => setSelectedStock(s)}
-                      className={`rounded-lg px-2 py-1 text-[11px] sm:text-xs font-semibold transition-all shrink-0 ${
-                        selectedStock.symbol === s.symbol
+                      onClick={() => setSelectedSymbol(s.symbol)}
+                      className={`rounded-lg px-2 py-1 text-[11px] sm:text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+                        activeStock.symbol === s.symbol
                           ? "bg-brand text-white shadow-xs"
                           : "bg-bg-primary text-text-secondary hover:text-text-primary border border-border-primary"
                       }`}
@@ -181,24 +291,24 @@ export function HeroSection() {
                 </div>
                 <span className="inline-flex items-center gap-1 rounded-full bg-profit-bg px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold text-profit shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-profit animate-pulse" />
-                  MARKET OPEN
+                  LIVE STREAM
                 </span>
               </div>
 
               {/* Price & Trend Header */}
               <div className="mt-3 sm:mt-4 flex flex-wrap items-baseline justify-between gap-2">
                 <div className="min-w-0">
-                  <h3 className="text-xl sm:text-2xl font-bold text-text-primary">{selectedStock.price}</h3>
-                  <p className="text-[11px] sm:text-xs text-text-tertiary truncate">{selectedStock.name}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-text-primary">{formattedPrice}</h3>
+                  <p className="text-[11px] sm:text-xs text-text-tertiary truncate">{activeStock.name}</p>
                 </div>
                 <div
                   className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 sm:py-1 text-[11px] sm:text-xs font-semibold shrink-0 ${
-                    selectedStock.isPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
+                    isPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
                   }`}
                 >
-                  <ChevronUp className={`h-3.5 w-3.5 shrink-0 ${!selectedStock.isPositive ? "rotate-180" : ""}`} />
+                  <ChevronUp className={`h-3.5 w-3.5 shrink-0 ${!isPositive ? "rotate-180" : ""}`} />
                   <span>
-                    {selectedStock.change} ({selectedStock.changePercent})
+                    {formattedChange} ({formattedPercent})
                   </span>
                 </div>
               </div>
@@ -234,19 +344,19 @@ export function HeroSection() {
                 <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
                   <span className="block text-[9px] sm:text-[10px] text-text-tertiary">24h High</span>
                   <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
-                    {selectedStock.high}
+                    {highPrice}
                   </span>
                 </div>
                 <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
                   <span className="block text-[9px] sm:text-[10px] text-text-tertiary">24h Low</span>
                   <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
-                    {selectedStock.low}
+                    {lowPrice}
                   </span>
                 </div>
                 <div className="rounded-lg bg-bg-primary p-1.5 sm:p-2 border border-border-primary min-w-0">
-                  <span className="block text-[9px] sm:text-[10px] text-text-tertiary">Volume</span>
+                  <span className="block text-[9px] sm:text-[10px] text-text-tertiary">Exchange</span>
                   <span className="font-semibold text-[11px] sm:text-xs text-text-primary truncate block">
-                    {selectedStock.volume}
+                    {stockExchange}
                   </span>
                 </div>
               </div>
@@ -257,7 +367,7 @@ export function HeroSection() {
                   <div className="flex rounded-lg bg-bg-secondary p-0.5 border border-border-primary">
                     <button
                       onClick={() => setOrderSide("BUY")}
-                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors ${
+                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer ${
                         orderSide === "BUY" ? "bg-profit text-white" : "text-text-secondary hover:text-text-primary"
                       }`}
                     >
@@ -265,7 +375,7 @@ export function HeroSection() {
                     </button>
                     <button
                       onClick={() => setOrderSide("SELL")}
-                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors ${
+                      className={`rounded-md px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer ${
                         orderSide === "SELL" ? "bg-loss text-white" : "text-text-secondary hover:text-text-primary"
                       }`}
                     >
@@ -282,7 +392,7 @@ export function HeroSection() {
                       <button
                         key={qty}
                         onClick={() => setDemoOrderQty(qty)}
-                        className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium border ${
+                        className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium border cursor-pointer ${
                           demoOrderQty === qty
                             ? "border-brand bg-brand/10 text-brand"
                             : "border-border-primary text-text-secondary hover:text-text-primary"
@@ -300,12 +410,19 @@ export function HeroSection() {
                     orderSide === "BUY" ? "bg-profit hover:opacity-90" : "bg-loss hover:opacity-90"
                   }`}
                 >
-                  Simulate {orderSide === "BUY" ? "Buy" : "Sell"} {demoOrderQty} {selectedStock.symbol}
+                  Simulate {orderSide === "BUY" ? "Buy" : "Sell"} {demoOrderQty} {activeStock.symbol} (≈
+                  {formatCurrency(demoOrderQty * currentPriceNum)})
                 </button>
 
-                {simulatedSuccess && (
-                  <div className="mt-2 rounded-lg border border-profit/30 bg-profit-bg p-1.5 text-center text-[11px] font-semibold text-profit">
-                    ✓ Simulated Order Filled: {orderSide} {demoOrderQty} {selectedStock.symbol} executed!
+                {tradeFeedback && (
+                  <div
+                    className={`mt-2 rounded-lg border p-1.5 text-center text-[11px] font-semibold ${
+                      tradeFeedback.type === "success"
+                        ? "border-profit/30 bg-profit-bg text-profit"
+                        : "border-loss/30 bg-loss-bg text-loss"
+                    }`}
+                  >
+                    {tradeFeedback.message}
                   </div>
                 )}
               </div>
@@ -313,10 +430,17 @@ export function HeroSection() {
               {/* Floating notification badge */}
               <div className="mt-3 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-text-tertiary">
                 <span className="flex items-center gap-1 truncate">
-                  <TrendingUp className="h-3 w-3 shrink-0 text-profit" />
-                  Portfolio: ₹10,24,580.00
+                  {isReturnPositive ? (
+                    <TrendingUp className="h-3 w-3 shrink-0 text-profit" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 shrink-0 text-loss" />
+                  )}
+                  Portfolio: {formatCurrency(totalPortfolioValue)}
                 </span>
-                <span className="font-medium text-profit shrink-0">+₹24,580.00 (+2.45%)</span>
+                <span className={`font-medium shrink-0 ${isReturnPositive ? "text-profit" : "text-loss"}`}>
+                  {portfolioReturn >= 0 ? "+" : ""}
+                  {formatCurrency(portfolioReturn)} ({formatPercent(portfolioReturnPercent)})
+                </span>
               </div>
             </div>
           </div>

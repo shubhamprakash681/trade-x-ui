@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { LineChart, Briefcase, Layers, Bell, ArrowUpRight, TrendingUp, Check, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { LineChart, Briefcase, Layers, Bell, Check, Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useLivePrices } from "@/hooks/use-live-prices";
+import { pricesApi } from "@/api/prices.api";
+import { formatCurrency, formatPercent } from "@/lib/utils";
+import { useDemoTradingStore, INITIAL_DEMO_CASH } from "@/store/demo-trading.store";
+import type { PriceResponse } from "@/types/api.types";
 
 type TabKey = "charts" | "portfolio" | "orders" | "alerts";
 
@@ -50,6 +56,60 @@ const TABS: TabConfig[] = [
 
 export function InteractivePreview() {
   const [activeTab, setActiveTab] = useState<TabKey>("charts");
+
+  const cashBalance = useDemoTradingStore((s) => s.cashBalance);
+  const holdings = useDemoTradingStore((s) => s.holdings);
+  const orders = useDemoTradingStore((s) => s.orders);
+
+  const latestPricesQuery = useQuery({
+    queryKey: ["prices", "latest"],
+    queryFn: pricesApi.getLatestPrices,
+    staleTime: 30_000,
+  });
+
+  const initialPricesMap = useMemo(() => {
+    const map: Record<string, PriceResponse> = {};
+    if (latestPricesQuery.data) {
+      for (const p of latestPricesQuery.data) {
+        map[p.symbol.toUpperCase()] = p;
+      }
+    }
+    return map;
+  }, [latestPricesQuery.data]);
+
+  const initialTcs = initialPricesMap["TCS"];
+
+  const symbolsToSubscribe = useMemo(() => {
+    const holdingSymbols = Object.keys(holdings);
+    return Array.from(new Set(["TCS", ...holdingSymbols]));
+  }, [holdings]);
+
+  const livePrices = useLivePrices(symbolsToSubscribe);
+
+  const tcsLive = livePrices["TCS"];
+  const tcsPrice = tcsLive?.price ?? initialTcs?.price ?? 4120.8;
+  const tcsChange = tcsLive?.changeAmount ?? initialTcs?.changeAmount ?? 45.6;
+  const tcsPercent = tcsLive?.changePercent ?? initialTcs?.changePercent ?? 1.12;
+  const tcsPositive = tcsChange >= 0;
+
+  const holdingsList = useMemo(() => Object.values(holdings), [holdings]);
+
+  const { investedAmount, currentHoldingsValue } = useMemo(() => {
+    let invested = 0;
+    let current = 0;
+    for (const h of holdingsList) {
+      const sym = h.symbol.toUpperCase();
+      const ltp = livePrices[sym]?.price ?? initialPricesMap[sym]?.price ?? h.avgBuyPrice;
+      invested += h.qty * h.avgBuyPrice;
+      current += h.qty * ltp;
+    }
+    return { investedAmount: invested, currentHoldingsValue: current };
+  }, [holdingsList, livePrices, initialPricesMap]);
+
+  const totalPortfolio = cashBalance + currentHoldingsValue;
+  const totalReturns = totalPortfolio - INITIAL_DEMO_CASH;
+  const returnsPercent = (totalReturns / INITIAL_DEMO_CASH) * 100;
+  const isReturnsPositive = totalReturns >= 0;
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
@@ -124,8 +184,13 @@ export function InteractivePreview() {
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
                       <span className="font-bold text-sm sm:text-base text-text-primary">TCS</span>
                       <span className="text-xs text-text-tertiary hidden xs:inline">Tata Consultancy</span>
-                      <span className="rounded bg-profit-bg px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold text-profit">
-                        +₹45.60 (+1.12%)
+                      <span
+                        className={`rounded px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold ${
+                          tcsPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
+                        }`}
+                      >
+                        {formatCurrency(tcsPrice)} ({tcsChange >= 0 ? "+" : ""}
+                        {tcsChange.toFixed(2)} · {formatPercent(tcsPercent)})
                       </span>
                     </div>
                     <div className="flex gap-1 shrink-0">
@@ -214,62 +279,92 @@ export function InteractivePreview() {
                 </div>
               )}
 
+              {/* Dynamic Simulated Portfolio Analytics */}
               {activeTab === "portfolio" && (
                 <div className="space-y-4 min-w-0">
                   <div className="grid grid-cols-1 min-[440px]:grid-cols-3 gap-2.5 sm:gap-3">
                     <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
                       <span className="text-[10px] sm:text-[11px] text-text-tertiary">Total Portfolio</span>
-                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">₹10,54,320.00</p>
+                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">
+                        {formatCurrency(totalPortfolio)}
+                      </p>
                     </div>
                     <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
                       <span className="text-[10px] sm:text-[11px] text-text-tertiary">Invested Amount</span>
-                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">₹6,80,000.00</p>
+                      <p className="text-sm sm:text-base font-bold text-text-primary truncate">
+                        {formatCurrency(investedAmount)}
+                      </p>
                     </div>
                     <div className="rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0">
                       <span className="text-[10px] sm:text-[11px] text-text-tertiary">Total Returns</span>
-                      <p className="text-sm sm:text-base font-bold text-profit truncate">+₹54,320.00 (+7.98%)</p>
+                      <p
+                        className={`text-sm sm:text-base font-bold truncate ${
+                          isReturnsPositive ? "text-profit" : "text-loss"
+                        }`}
+                      >
+                        {totalReturns >= 0 ? "+" : ""}
+                        {formatCurrency(totalReturns)} ({formatPercent(returnsPercent)})
+                      </p>
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full min-w-[340px] text-left text-xs">
-                      <thead>
-                        <tr className="border-b border-border-primary text-text-tertiary">
-                          <th className="pb-2 font-medium">Stock</th>
-                          <th className="pb-2 font-medium">Qty</th>
-                          <th className="pb-2 font-medium">Avg. Buy</th>
-                          <th className="pb-2 font-medium">LTP</th>
-                          <th className="pb-2 text-right font-medium">P&L</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border-primary/50">
-                        <tr>
-                          <td className="py-2.5 font-semibold text-text-primary">RELIANCE</td>
-                          <td className="py-2.5">50</td>
-                          <td className="py-2.5">₹2,840.00</td>
-                          <td className="py-2.5">₹2,984.50</td>
-                          <td className="py-2.5 text-right font-semibold text-profit">+₹7,225.00</td>
-                        </tr>
-                        <tr>
-                          <td className="py-2.5 font-semibold text-text-primary">TCS</td>
-                          <td className="py-2.5">30</td>
-                          <td className="py-2.5">₹3,980.00</td>
-                          <td className="py-2.5">₹4,120.80</td>
-                          <td className="py-2.5 text-right font-semibold text-profit">+₹4,224.00</td>
-                        </tr>
-                        <tr>
-                          <td className="py-2.5 font-semibold text-text-primary">TATAMOTORS</td>
-                          <td className="py-2.5">100</td>
-                          <td className="py-2.5">₹940.00</td>
-                          <td className="py-2.5">₹1,024.40</td>
-                          <td className="py-2.5 text-right font-semibold text-profit">+₹8,440.00</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  {holdingsList.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-10 px-4 text-center rounded-xl border border-dashed border-border-primary bg-bg-secondary/40">
+                      <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand mb-3">
+                        <Briefcase className="h-5 w-5" />
+                      </div>
+                      <p className="font-semibold text-sm text-text-primary">No Simulated Holdings Yet</p>
+                      <p className="text-xs text-text-secondary mt-1 max-w-sm">
+                        Place a simulated Buy order in the Quick Trade widget above to start building your paper
+                        portfolio with your ₹10,00,000 virtual balance.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto w-full">
+                      <table className="w-full min-w-[340px] text-left text-xs">
+                        <thead>
+                          <tr className="border-b border-border-primary text-text-tertiary">
+                            <th className="pb-2 font-medium">Stock</th>
+                            <th className="pb-2 font-medium">Qty</th>
+                            <th className="pb-2 font-medium">Avg. Buy</th>
+                            <th className="pb-2 font-medium">LTP</th>
+                            <th className="pb-2 text-right font-medium">P&L</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border-primary/50">
+                          {holdingsList.map((h) => {
+                            const sym = h.symbol.toUpperCase();
+                            const ltp = livePrices[sym]?.price ?? initialPricesMap[sym]?.price ?? h.avgBuyPrice;
+                            const pnl = (ltp - h.avgBuyPrice) * h.qty;
+                            const pnlPercent =
+                              h.avgBuyPrice > 0 ? ((ltp - h.avgBuyPrice) / h.avgBuyPrice) * 100 : 0;
+                            const isPnlPositive = pnl >= 0;
+
+                            return (
+                              <tr key={h.symbol}>
+                                <td className="py-2.5 font-semibold text-text-primary">{h.symbol}</td>
+                                <td className="py-2.5">{h.qty}</td>
+                                <td className="py-2.5">{formatCurrency(h.avgBuyPrice)}</td>
+                                <td className="py-2.5 font-medium text-text-primary">{formatCurrency(ltp)}</td>
+                                <td
+                                  className={`py-2.5 text-right font-semibold ${
+                                    isPnlPositive ? "text-profit" : "text-loss"
+                                  }`}
+                                >
+                                  {isPnlPositive ? "+" : ""}
+                                  {formatCurrency(pnl)} ({formatPercent(pnlPercent)})
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
 
+              {/* Dynamic Simulated Order Execution */}
               {activeTab === "orders" && (
                 <div className="space-y-4 min-w-0">
                   <div className="flex items-center justify-between border-b border-border-primary pb-3 min-w-0">
@@ -277,44 +372,56 @@ export function InteractivePreview() {
                     <span className="text-xs text-text-tertiary">Real-time status matching</span>
                   </div>
 
-                  <div className="space-y-2.5 min-w-0">
-                    {[
-                      { id: "ORD-9281", stock: "RELIANCE", type: "BUY", qty: 25, price: "₹2,984.50", status: "FILLED" },
-                      { id: "ORD-9280", stock: "INFY", type: "SELL", qty: 15, price: "₹1,842.15", status: "FILLED" },
-                      { id: "ORD-9279", stock: "HDFCBANK", type: "BUY", qty: 40, price: "₹1,648.90", status: "FILLED" },
-                    ].map((order) => (
-                      <div
-                        key={order.id}
-                        className="flex items-center justify-between gap-2 rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0"
-                      >
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                          <span
-                            className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold shrink-0 ${
-                              order.type === "BUY" ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
-                            }`}
-                          >
-                            {order.type}
-                          </span>
-                          <div className="min-w-0">
-                            <p className="font-semibold text-xs text-text-primary truncate">{order.stock}</p>
-                            <p className="text-[10px] text-text-tertiary truncate">{order.id} · Today, 11:42 AM</p>
+                  {orders.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-10 px-4 text-center rounded-xl border border-dashed border-border-primary bg-bg-secondary/40">
+                      <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand mb-3">
+                        <Layers className="h-5 w-5" />
+                      </div>
+                      <p className="font-semibold text-sm text-text-primary">No Simulated Orders Executed</p>
+                      <p className="text-xs text-text-secondary mt-1 max-w-sm">
+                        Simulate a market order in the Quick Trade section above to observe real-time transaction
+                        ledger updates and order matching.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5 min-w-0 max-h-72 overflow-y-auto pr-1">
+                      {orders.map((order) => (
+                        <div
+                          key={order.id}
+                          className="flex items-center justify-between gap-2 rounded-lg bg-bg-secondary p-2.5 sm:p-3 border border-border-primary min-w-0"
+                        >
+                          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                            <span
+                              className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-bold shrink-0 ${
+                                order.type === "BUY" ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
+                              }`}
+                            >
+                              {order.type}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-xs text-text-primary truncate">{order.stock}</p>
+                              <p className="text-[10px] text-text-tertiary truncate">
+                                {order.id} · {order.timestamp}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <p className="font-semibold text-xs text-text-primary">
+                              {order.qty} sh @ {formatCurrency(order.price)}
+                            </p>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-profit">
+                              <Check className="h-3 w-3 shrink-0" /> {order.status}
+                            </span>
                           </div>
                         </div>
-
-                        <div className="text-right shrink-0">
-                          <p className="font-semibold text-xs text-text-primary">
-                            {order.qty} sh @ {order.price}
-                          </p>
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-profit">
-                            <Check className="h-3 w-3 shrink-0" /> {order.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
+              {/* Static Showcase Mockup for Authenticated Platform Features */}
               {activeTab === "alerts" && (
                 <div className="space-y-4 min-w-0">
                   <div className="flex items-center justify-between border-b border-border-primary pb-3 min-w-0">
@@ -326,9 +433,9 @@ export function InteractivePreview() {
 
                   <div className="space-y-2.5 min-w-0">
                     {[
-                      { stock: "RELIANCE", condition: "Price crosses above", target: "₹3,000.00", active: true },
-                      { stock: "TCS", condition: "Price crosses below", target: "₹4,050.00", active: true },
-                      { stock: "TATAMOTORS", condition: "Price crosses above", target: "₹1,050.00", active: true },
+                      { stock: "RELIANCE", condition: "Price crosses above", target: "₹3,000.00" },
+                      { stock: "TCS", condition: "Price crosses below", target: "₹4,050.00" },
+                      { stock: "TATAMOTORS", condition: "Price crosses above", target: "₹1,050.00" },
                     ].map((alert, i) => (
                       <div
                         key={i}
