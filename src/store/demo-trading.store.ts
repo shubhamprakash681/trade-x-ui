@@ -20,6 +20,8 @@ interface DemoTradingState {
   cashBalance: number;
   holdings: Record<string, DemoHolding>;
   orders: DemoOrder[];
+  selectedSymbol: string;
+  setSelectedSymbol: (symbol: string) => void;
   executeTrade: (params: { symbol: string; side: "BUY" | "SELL"; qty: number; price: number }) => {
     success: boolean;
     message?: string;
@@ -33,6 +35,8 @@ export const useDemoTradingStore = create<DemoTradingState>((set, get) => ({
   cashBalance: INITIAL_DEMO_CASH,
   holdings: {},
   orders: [],
+  selectedSymbol: "RELIANCE",
+  setSelectedSymbol: (symbol: string) => set({ selectedSymbol: symbol.toUpperCase() }),
   executeTrade: ({ symbol, side, qty, price }) => {
     const { cashBalance, holdings, orders } = get();
     const normalizedSymbol = symbol.toUpperCase();
@@ -147,5 +151,6 @@ export const useDemoTradingStore = create<DemoTradingState>((set, get) => ({
       cashBalance: INITIAL_DEMO_CASH,
       holdings: {},
       orders: [],
+      selectedSymbol: "RELIANCE",
     }),
 }));

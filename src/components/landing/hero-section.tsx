@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -21,9 +21,10 @@ import { useLivePrices } from "@/hooks/use-live-prices";
 import { pricesApi } from "@/api/prices.api";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { useDemoTradingStore, INITIAL_DEMO_CASH } from "@/store/demo-trading.store";
+import { DynamicSparkline } from "./dynamic-sparkline";
 import type { PriceResponse } from "@/types/api.types";
 
-interface DemoStockItem {
+export interface DemoStockItem {
   symbol: string;
   name: string;
   referencePrice: number;
@@ -31,7 +32,7 @@ interface DemoStockItem {
   sector: string;
 }
 
-const FALLBACK_DEMO_STOCKS: DemoStockItem[] = [
+export const FALLBACK_DEMO_STOCKS: DemoStockItem[] = [
   {
     symbol: "RELIANCE",
     name: "Reliance Industries Ltd",
@@ -101,17 +102,25 @@ export function HeroSection() {
   }, [stockList, holdings]);
   const livePrices = useLivePrices(symbols);
 
-  const [selectedSymbol, setSelectedSymbol] = useState<string>("RELIANCE");
+  const selectedSymbol = useDemoTradingStore((s) => s.selectedSymbol);
+  const setSelectedSymbol = useDemoTradingStore((s) => s.setSelectedSymbol);
   const [orderSide, setOrderSide] = useState<"BUY" | "SELL">("BUY");
   const [demoOrderQty, setDemoOrderQty] = useState(10);
   const [tradeFeedback, setTradeFeedback] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [hoveredScrubPrice, setHoveredScrubPrice] = useState<number | null>(null);
 
   const activeStock = useMemo(() => {
     return stockList.find((s) => s.symbol.toUpperCase() === selectedSymbol.toUpperCase()) ?? stockList[0];
   }, [stockList, selectedSymbol]);
+
+  useEffect(() => {
+    if (stockList.length > 0 && !stockList.some((s) => s.symbol.toUpperCase() === selectedSymbol.toUpperCase())) {
+      setSelectedSymbol(stockList[0].symbol);
+    }
+  }, [stockList, selectedSymbol, setSelectedSymbol]);
 
   const currentSym = activeStock.symbol.toUpperCase();
   const liveData = livePrices[currentSym] ?? initialPricesMap[currentSym];
@@ -298,7 +307,12 @@ export function HeroSection() {
               {/* Price & Trend Header */}
               <div className="mt-3 sm:mt-4 flex flex-wrap items-baseline justify-between gap-2">
                 <div className="min-w-0">
-                  <h3 className="text-xl sm:text-2xl font-bold text-text-primary">{formattedPrice}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-text-primary">
+                    {hoveredScrubPrice !== null ? formatCurrency(hoveredScrubPrice) : formattedPrice}
+                    {hoveredScrubPrice !== null && (
+                      <span className="ml-1.5 text-[10px] sm:text-xs font-normal text-text-tertiary">(Scrubbing)</span>
+                    )}
+                  </h3>
                   <p className="text-[11px] sm:text-xs text-text-tertiary truncate">{activeStock.name}</p>
                 </div>
                 <div
@@ -313,30 +327,16 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* Simulated Lightweight Area Chart Sparkline */}
+              {/* Dynamic Real-Time Streaming Area Sparkline */}
               <div className="mt-3 sm:mt-4 h-24 sm:h-28 w-full overflow-hidden rounded-xl border border-border-primary bg-bg-primary/70 p-1.5 sm:p-2">
-                <svg viewBox="0 0 300 80" className="h-full w-full overflow-visible" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#6366F1" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="#6366F1" stopOpacity="0.0" />
-                    </linearGradient>
-                  </defs>
-                  {/* Area fill */}
-                  <polygon
-                    points="0,70 15,65 35,68 60,50 85,55 110,40 140,48 170,30 200,38 230,22 260,25 285,15 300,10 300,80 0,80"
-                    fill="url(#chartGlow)"
-                  />
-                  {/* Line */}
-                  <polyline
-                    points="0,70 15,65 35,68 60,50 85,55 110,40 140,48 170,30 200,38 230,22 260,25 285,15 300,10"
-                    fill="none"
-                    stroke="#6366F1"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <DynamicSparkline
+                  symbol={activeStock.symbol}
+                  currentPrice={currentPriceNum}
+                  changeAmount={currentChangeAmount}
+                  isPositive={isPositive}
+                  onHoverPrice={setHoveredScrubPrice}
+                  className="h-full"
+                />
               </div>
 
               {/* Stats Bar */}

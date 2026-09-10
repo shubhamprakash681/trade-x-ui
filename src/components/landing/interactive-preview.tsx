@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { LineChart, Briefcase, Layers, Bell, Check, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useStocks } from "@/hooks/use-stocks";
 import { useLivePrices } from "@/hooks/use-live-prices";
 import { pricesApi } from "@/api/prices.api";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 import { useDemoTradingStore, INITIAL_DEMO_CASH } from "@/store/demo-trading.store";
+import { FALLBACK_DEMO_STOCKS } from "./hero-section";
 import type { PriceResponse } from "@/types/api.types";
 
 type TabKey = "charts" | "portfolio" | "orders" | "alerts";
@@ -54,13 +56,74 @@ const TABS: TabConfig[] = [
   },
 ];
 
+interface CandleItem {
+  x: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  isUp: boolean;
+}
+
+function generateCandles(
+  symbol: string,
+  currentPrice: number,
+  changeAmount: number,
+  period: string = "1D",
+): CandleItem[] {
+  const seed = symbol.split("").reduce((acc, c, idx) => acc + c.charCodeAt(0) * (idx + 1), 0);
+  const count = 12;
+  const candles: CandleItem[] = [];
+
+  const periodMultiplier =
+    period === "1W" ? 1.8 : period === "1M" ? 3.0 : period === "1Y" ? 5.5 : period === "ALL" ? 8.0 : 1.0;
+
+  const startPrice = currentPrice - changeAmount * periodMultiplier;
+  const delta = currentPrice - startPrice;
+
+  let currentOpen = startPrice;
+
+  for (let i = 0; i < count; i++) {
+    const progress = (i + 1) / count;
+    const wave = Math.sin((i + (seed % 7)) * 0.95) * (currentPrice * 0.0035 * Math.sqrt(periodMultiplier));
+    const targetClose = i === count - 1 ? currentPrice : startPrice + delta * progress + wave;
+    const open = currentOpen;
+    const close = i === count - 1 ? currentPrice : targetClose;
+    const isUp = close >= open;
+
+    const maxBody = Math.max(open, close);
+    const minBody = Math.min(open, close);
+    const wickHigh = Math.abs(Math.sin((i * 1.7 + seed) * 0.8)) * (currentPrice * 0.003 * Math.sqrt(periodMultiplier));
+    const wickLow = Math.abs(Math.cos((i * 1.3 + seed) * 0.8)) * (currentPrice * 0.003 * Math.sqrt(periodMultiplier));
+
+    const high = maxBody + wickHigh;
+    const low = Math.max(minBody - wickLow, 0.01);
+
+    candles.push({
+      x: 36 + i * 36,
+      open,
+      high,
+      low,
+      close,
+      isUp,
+    });
+
+    currentOpen = close;
+  }
+
+  return candles;
+}
+
 export function InteractivePreview() {
   const [activeTab, setActiveTab] = useState<TabKey>("charts");
+  // const [selectedPeriod, setSelectedPeriod] = useState<string>("1D");
 
+  const selectedSymbol = useDemoTradingStore((s) => s.selectedSymbol);
   const cashBalance = useDemoTradingStore((s) => s.cashBalance);
   const holdings = useDemoTradingStore((s) => s.holdings);
   const orders = useDemoTradingStore((s) => s.orders);
 
+  const stocksQuery = useStocks(0, 8);
   const latestPricesQuery = useQuery({
     queryKey: ["prices", "latest"],
     queryFn: pricesApi.getLatestPrices,
@@ -77,20 +140,58 @@ export function InteractivePreview() {
     return map;
   }, [latestPricesQuery.data]);
 
-  const initialTcs = initialPricesMap["TCS"];
+  const activeStock = useMemo(() => {
+    const fromApi = stocksQuery.data?.content?.find((s) => s.symbol.toUpperCase() === selectedSymbol.toUpperCase());
+    if (fromApi) {
+      return {
+        symbol: fromApi.symbol,
+        name: fromApi.name,
+        referencePrice: fromApi.referencePrice,
+      };
+    }
+    const fallback = FALLBACK_DEMO_STOCKS.find((s) => s.symbol.toUpperCase() === selectedSymbol.toUpperCase());
+    return fallback ?? { symbol: selectedSymbol, name: `${selectedSymbol} Limited`, referencePrice: 2000 };
+  }, [stocksQuery.data, selectedSymbol]);
 
   const symbolsToSubscribe = useMemo(() => {
     const holdingSymbols = Object.keys(holdings);
-    return Array.from(new Set(["TCS", ...holdingSymbols]));
-  }, [holdings]);
+    return Array.from(new Set([selectedSymbol, ...holdingSymbols]));
+  }, [selectedSymbol, holdings]);
 
   const livePrices = useLivePrices(symbolsToSubscribe);
 
-  const tcsLive = livePrices["TCS"];
-  const tcsPrice = tcsLive?.price ?? initialTcs?.price ?? 4120.8;
-  const tcsChange = tcsLive?.changeAmount ?? initialTcs?.changeAmount ?? 45.6;
-  const tcsPercent = tcsLive?.changePercent ?? initialTcs?.changePercent ?? 1.12;
-  const tcsPositive = tcsChange >= 0;
+  const currentSym = activeStock.symbol.toUpperCase();
+  const liveData = livePrices[currentSym] ?? initialPricesMap[currentSym];
+  const stockPrice = liveData?.price ?? activeStock.referencePrice;
+  const stockChange = liveData?.changeAmount ?? 0;
+  const stockPercent = liveData?.changePercent ?? 0;
+  const stockPositive = stockChange >= 0;
+
+  const candleList = useMemo(() => {
+    // return generateCandles(currentSym, stockPrice, stockChange, selectedPeriod);
+    return generateCandles(currentSym, stockPrice, stockChange);
+  }, [currentSym, stockPrice, stockChange]);
+
+  const { minPrice, maxPrice } = useMemo(() => {
+    if (candleList.length === 0) return { minPrice: 0, maxPrice: 0 };
+    let min = Math.min(...candleList.map((c) => c.low));
+    let max = Math.max(...candleList.map((c) => c.high));
+    if (min === max) {
+      min -= stockPrice * 0.01;
+      max += stockPrice * 0.01;
+    }
+    return { minPrice: min, maxPrice: max };
+  }, [candleList, stockPrice]);
+
+  const toY = useCallback(
+    (price: number) => {
+      const topY = 16;
+      const bottomY = 120;
+      const range = maxPrice - minPrice || 1;
+      return bottomY - ((price - minPrice) / range) * (bottomY - topY);
+    },
+    [minPrice, maxPrice],
+  );
 
   const holdingsList = useMemo(() => Object.values(holdings), [holdings]);
 
@@ -182,29 +283,32 @@ export function InteractivePreview() {
                 <div className="space-y-3 sm:space-y-4 min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-primary pb-3 min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
-                      <span className="font-bold text-sm sm:text-base text-text-primary">TCS</span>
-                      <span className="text-xs text-text-tertiary hidden xs:inline">Tata Consultancy</span>
+                      <span className="font-bold text-sm sm:text-base text-text-primary">{activeStock.symbol}</span>
+                      <span className="text-xs text-text-tertiary hidden xs:inline">{activeStock.name}</span>
                       <span
                         className={`rounded px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold ${
-                          tcsPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
+                          stockPositive ? "bg-profit-bg text-profit" : "bg-loss-bg text-loss"
                         }`}
                       >
-                        {formatCurrency(tcsPrice)} ({tcsChange >= 0 ? "+" : ""}
-                        {tcsChange.toFixed(2)} · {formatPercent(tcsPercent)})
+                        {formatCurrency(stockPrice)} ({stockChange >= 0 ? "+" : ""}
+                        {stockChange.toFixed(2)} · {formatPercent(stockPercent)})
                       </span>
                     </div>
-                    <div className="flex gap-1 shrink-0">
+                    {/* <div className="flex gap-1 shrink-0">
                       {["1D", "1W", "1M", "1Y", "ALL"].map((period) => (
-                        <span
+                        <button
                           key={period}
-                          className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium ${
-                            period === "1D" ? "bg-brand text-white" : "text-text-tertiary hover:text-text-primary"
+                          onClick={() => setSelectedPeriod(period)}
+                          className={`rounded px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium transition-colors cursor-pointer ${
+                            period === selectedPeriod
+                              ? "bg-brand text-white shadow-xs"
+                              : "text-text-tertiary hover:text-text-primary hover:bg-bg-tertiary"
                           }`}
                         >
                           {period}
-                        </span>
+                        </button>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Simulated Candle and Line Chart */}
@@ -238,41 +342,32 @@ export function InteractivePreview() {
                         className="text-border-primary"
                         strokeDasharray="3 3"
                       />
-                      {/* Candlesticks */}
-                      <g className="opacity-90">
-                        {/* Up candles */}
-                        <line x1="40" y1="90" x2="40" y2="60" stroke="#10B981" strokeWidth="1" />
-                        <rect x="36" y="70" width="8" height="15" fill="#10B981" rx="1" />
+                      {/* Dynamic Candlesticks */}
+                      <g className="opacity-95" data-testid="dynamic-candlesticks">
+                        {candleList.map((candle, idx) => {
+                          const color = candle.isUp ? "#10B981" : "#EF4444";
+                          const wickY1 = toY(candle.high);
+                          const wickY2 = toY(candle.low);
+                          const bodyTop = Math.min(toY(candle.open), toY(candle.close));
+                          const bodyHeight = Math.max(3, Math.abs(toY(candle.close) - toY(candle.open)));
 
-                        <line x1="80" y1="80" x2="80" y2="40" stroke="#10B981" strokeWidth="1" />
-                        <rect x="76" y="55" width="8" height="20" fill="#10B981" rx="1" />
-
-                        <line x1="120" y1="75" x2="120" y2="45" stroke="#EF4444" strokeWidth="1" />
-                        <rect x="116" y="50" width="8" height="18" fill="#EF4444" rx="1" />
-
-                        <line x1="160" y1="85" x2="160" y2="35" stroke="#10B981" strokeWidth="1" />
-                        <rect x="156" y="45" width="8" height="25" fill="#10B981" rx="1" />
-
-                        <line x1="200" y1="65" x2="200" y2="25" stroke="#10B981" strokeWidth="1" />
-                        <rect x="196" y="35" width="8" height="20" fill="#10B981" rx="1" />
-
-                        <line x1="240" y1="55" x2="240" y2="20" stroke="#EF4444" strokeWidth="1" />
-                        <rect x="236" y="25" width="8" height="15" fill="#EF4444" rx="1" />
-
-                        <line x1="280" y1="45" x2="280" y2="15" stroke="#10B981" strokeWidth="1" />
-                        <rect x="276" y="20" width="8" height="20" fill="#10B981" rx="1" />
-
-                        <line x1="320" y1="35" x2="320" y2="10" stroke="#10B981" strokeWidth="1" />
-                        <rect x="316" y="15" width="8" height="16" fill="#10B981" rx="1" />
-
-                        <line x1="360" y1="40" x2="360" y2="18" stroke="#EF4444" strokeWidth="1" />
-                        <rect x="356" y="22" width="8" height="12" fill="#EF4444" rx="1" />
-
-                        <line x1="400" y1="30" x2="400" y2="8" stroke="#10B981" strokeWidth="1" />
-                        <rect x="396" y="12" width="8" height="14" fill="#10B981" rx="1" />
-
-                        <line x1="440" y1="25" x2="440" y2="5" stroke="#10B981" strokeWidth="1" />
-                        <rect x="436" y="8" width="8" height="15" fill="#10B981" rx="1" />
+                          return (
+                            <g key={idx}>
+                              {/* Wick */}
+                              <line
+                                x1={candle.x + 4}
+                                y1={wickY1}
+                                x2={candle.x + 4}
+                                y2={wickY2}
+                                stroke={color}
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                              />
+                              {/* Candle body */}
+                              <rect x={candle.x} y={bodyTop} width="8" height={bodyHeight} fill={color} rx="1" />
+                            </g>
+                          );
+                        })}
                       </g>
                     </svg>
                   </div>
@@ -321,7 +416,7 @@ export function InteractivePreview() {
                     </div>
                   ) : (
                     <div className="overflow-x-auto w-full">
-                      <table className="w-full min-w-[340px] text-left text-xs">
+                      <table className="w-full min-w-85 text-left text-xs">
                         <thead>
                           <tr className="border-b border-border-primary text-text-tertiary">
                             <th className="pb-2 font-medium">Stock</th>
@@ -336,8 +431,7 @@ export function InteractivePreview() {
                             const sym = h.symbol.toUpperCase();
                             const ltp = livePrices[sym]?.price ?? initialPricesMap[sym]?.price ?? h.avgBuyPrice;
                             const pnl = (ltp - h.avgBuyPrice) * h.qty;
-                            const pnlPercent =
-                              h.avgBuyPrice > 0 ? ((ltp - h.avgBuyPrice) / h.avgBuyPrice) * 100 : 0;
+                            const pnlPercent = h.avgBuyPrice > 0 ? ((ltp - h.avgBuyPrice) / h.avgBuyPrice) * 100 : 0;
                             const isPnlPositive = pnl >= 0;
 
                             return (
@@ -379,8 +473,8 @@ export function InteractivePreview() {
                       </div>
                       <p className="font-semibold text-sm text-text-primary">No Simulated Orders Executed</p>
                       <p className="text-xs text-text-secondary mt-1 max-w-sm">
-                        Simulate a market order in the Quick Trade section above to observe real-time transaction
-                        ledger updates and order matching.
+                        Simulate a market order in the Quick Trade section above to observe real-time transaction ledger
+                        updates and order matching.
                       </p>
                     </div>
                   ) : (

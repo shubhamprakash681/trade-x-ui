@@ -2,10 +2,26 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { InteractivePreview } from "./interactive-preview";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { stocksApi } from "@/api/stocks.api";
 import { pricesApi } from "@/api/prices.api";
 import { marketStream } from "@/websocket/market-stream";
 import { useDemoTradingStore } from "@/store/demo-trading.store";
 import type { PriceResponse } from "@/types/api.types";
+
+vi.mock("@/api/stocks.api", () => ({
+  stocksApi: {
+    getStocks: vi.fn().mockResolvedValue({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 8,
+      number: 0,
+      first: true,
+      last: true,
+      empty: true,
+    }),
+  },
+}));
 
 vi.mock("@/api/prices.api", () => ({
   pricesApi: {
@@ -37,7 +53,8 @@ describe("InteractivePreview", () => {
     useDemoTradingStore.getState().reset();
   });
 
-  it("renders Live Charts tab with dynamic TCS price and updates on tick", async () => {
+  it("renders Live Charts tab with dynamic selected stock price and updates on tick", async () => {
+    useDemoTradingStore.getState().setSelectedSymbol("TCS");
     let tcsCallback: ((tick: PriceResponse) => void) | undefined;
     vi.mocked(marketStream.subscribe).mockImplementation((symbol, cb) => {
       if (symbol === "TCS") {
@@ -76,6 +93,48 @@ describe("InteractivePreview", () => {
     });
 
     expect(await screen.findByText(/₹4,150\.00/)).toBeInTheDocument();
+  });
+
+  it("synchronizes displayed stock with demoTradingStore selectedSymbol and renders dynamic candlesticks", async () => {
+    vi.mocked(pricesApi.getLatestPrices).mockResolvedValue([
+      {
+        symbol: "RELIANCE",
+        price: 2985.4,
+        previousPrice: 2950.0,
+        changeAmount: 35.4,
+        changePercent: 1.2,
+        synthetic: false,
+        timestamp: "2026-09-11T00:00:00Z",
+      },
+      {
+        symbol: "INFY",
+        price: 1842.15,
+        previousPrice: 1800.0,
+        changeAmount: 42.15,
+        changePercent: 2.34,
+        synthetic: false,
+        timestamp: "2026-09-11T00:00:00Z",
+      },
+    ]);
+
+    renderWithClient(<InteractivePreview />);
+
+    // Default symbol is RELIANCE
+    expect(await screen.findByText("Reliance Industries Ltd")).toBeInTheDocument();
+    expect(screen.getByTestId("dynamic-candlesticks")).toBeInTheDocument();
+
+    // Switch selected symbol to INFY
+    act(() => {
+      useDemoTradingStore.getState().setSelectedSymbol("INFY");
+    });
+
+    expect(await screen.findByText("Infosys Limited")).toBeInTheDocument();
+    expect(screen.getByText(/₹1,842\.15/)).toBeInTheDocument();
+
+    // Switch timeframe
+    const weekBtn = screen.getByRole("button", { name: "1W" });
+    fireEvent.click(weekBtn);
+    expect(weekBtn).toHaveClass("bg-brand");
   });
 
   it("displays initial empty state for Portfolio Analytics and shows dynamic holdings when trades are placed", async () => {
