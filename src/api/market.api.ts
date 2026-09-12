@@ -5,13 +5,29 @@ import type {
   MarketTrendResponse,
 } from "@/types/api.types";
 
+export interface MarketHistoryParams {
+  interval?: string;
+  range?: string;
+  from?: string;
+  to?: string;
+}
+
 export const marketApi = {
-  getHistory: (symbol: string, from?: string, to?: string) =>
-    apiClient
+  getHistory: (
+    symbol: string,
+    paramsOrFrom?: MarketHistoryParams | string,
+    to?: string
+  ) => {
+    const params =
+      typeof paramsOrFrom === "object" && paramsOrFrom !== null
+        ? paramsOrFrom
+        : { from: paramsOrFrom, to };
+    return apiClient
       .get<CandleResponse[]>(`/api/market/history/${symbol}`, {
-        params: { from, to },
+        params,
       })
-      .then((r) => r.data),
+      .then((r) => r.data);
+  },
 
   getLatestCandle: (symbol: string) =>
     apiClient

@@ -116,7 +116,7 @@ function generateCandles(
 
 export function InteractivePreview() {
   const [activeTab, setActiveTab] = useState<TabKey>("charts");
-  // const [selectedPeriod, setSelectedPeriod] = useState<string>("1D");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("1D");
 
   const selectedSymbol = useDemoTradingStore((s) => s.selectedSymbol);
   const cashBalance = useDemoTradingStore((s) => s.cashBalance);
@@ -168,9 +168,8 @@ export function InteractivePreview() {
   const stockPositive = stockChange >= 0;
 
   const candleList = useMemo(() => {
-    // return generateCandles(currentSym, stockPrice, stockChange, selectedPeriod);
-    return generateCandles(currentSym, stockPrice, stockChange);
-  }, [currentSym, stockPrice, stockChange]);
+    return generateCandles(currentSym, stockPrice, stockChange, selectedPeriod);
+  }, [currentSym, stockPrice, stockChange, selectedPeriod]);
 
   const { minPrice, maxPrice } = useMemo(() => {
     if (candleList.length === 0) return { minPrice: 0, maxPrice: 0 };
@@ -294,7 +293,7 @@ export function InteractivePreview() {
                         {stockChange.toFixed(2)} · {formatPercent(stockPercent)})
                       </span>
                     </div>
-                    {/* <div className="flex gap-1 shrink-0">
+                    <div className="flex gap-1 shrink-0">
                       {["1D", "1W", "1M", "1Y", "ALL"].map((period) => (
                         <button
                           key={period}
@@ -308,7 +307,7 @@ export function InteractivePreview() {
                           {period}
                         </button>
                       ))}
-                    </div> */}
+                    </div>
                   </div>
 
                   {/* Simulated Candle and Line Chart */}

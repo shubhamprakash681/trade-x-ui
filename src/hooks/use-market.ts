@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { marketApi } from "@/api/market.api";
+import { marketApi, type MarketHistoryParams } from "@/api/market.api";
 import { pricesApi } from "@/api/prices.api";
 
 const MARKET_STALE_TIME = 60_000;
@@ -30,12 +30,12 @@ export function useTrending() {
   });
 }
 
-export function useMarketHistory(symbol: string) {
+export function useMarketHistory(symbol: string, params?: MarketHistoryParams) {
   return useQuery({
-    queryKey: ["market", "history", symbol],
-    queryFn: () => marketApi.getHistory(symbol),
+    queryKey: ["market", "history", symbol, params?.interval, params?.range, params?.from, params?.to],
+    queryFn: () => marketApi.getHistory(symbol, params),
     enabled: Boolean(symbol),
-    staleTime: 5 * 60_000,
+    staleTime: params?.interval === "1s" || params?.interval === "SECONDS" ? 2_000 : 30_000,
   });
 }
 
