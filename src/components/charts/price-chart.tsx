@@ -68,7 +68,21 @@ export function PriceChart({ candles, livePrice }: PriceChartProps) {
       axisLabelVisible: true,
       title: "Live",
     });
-  }, [livePrice]);
 
-  return <div ref={containerRef} className="h-[360px] w-full" aria-label="Historical candlestick chart with current live price" />;
+    if (candles.length > 0) {
+      const lastCandle = candles[candles.length - 1];
+      const time = toTimestamp(lastCandle.candleTime);
+      if (time !== null) {
+        series.update({
+          time,
+          open: lastCandle.open,
+          high: Math.max(lastCandle.high, livePrice.price),
+          low: Math.min(lastCandle.low, livePrice.price),
+          close: livePrice.price,
+        });
+      }
+    }
+  }, [livePrice, candles]);
+
+  return <div ref={containerRef} className="h-90 w-full" aria-label="Historical candlestick chart with current live price" />;
 }
