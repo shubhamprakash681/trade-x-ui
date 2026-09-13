@@ -265,4 +265,66 @@ describe("HeroSection", () => {
     expect(await screen.findByText(/You don't own enough RELIANCE shares to sell/i)).toBeInTheDocument();
     expect(useDemoTradingStore.getState().orders.length).toBe(0);
   });
+
+  it("shows portfolio analysis link after trade is taken and handles scroll and tab event", async () => {
+    vi.mocked(stocksApi.getStocks).mockResolvedValue({
+      content: [
+        {
+          symbol: "RELIANCE",
+          name: "Reliance Industries Ltd",
+          exchange: "NSE",
+          sector: "Energy",
+          referencePrice: 2000.0,
+          synthetic: false,
+        },
+      ],
+      totalElements: 1,
+      totalPages: 1,
+      size: 4,
+      number: 0,
+      first: true,
+      last: true,
+      empty: false,
+    });
+    vi.mocked(pricesApi.getLatestPrices).mockResolvedValue([]);
+    vi.mocked(marketStream.subscribe).mockReturnValue(vi.fn());
+
+    // Mock target element for scrollIntoView
+    const scrollMock = vi.fn();
+    const fakeTarget = document.createElement("section");
+    fakeTarget.id = "portfolio-analysis";
+    fakeTarget.scrollIntoView = scrollMock;
+    document.body.appendChild(fakeTarget);
+
+    const eventSpy = vi.fn();
+    window.addEventListener("tradex:switch-preview-tab", eventSpy);
+
+    renderWithClient(<HeroSection />);
+
+    // Initially no trades taken, link should not be present
+    expect(screen.queryByTestId("hero-portfolio-link")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("hero-portfolio-cta")).not.toBeInTheDocument();
+
+    // Execute simulated trade
+    const simulateButton = screen.getByText(/Simulate Buy 10 RELIANCE/i);
+    fireEvent.click(simulateButton);
+
+    // After trade is executed, link should appear
+    const portfolioLink = await screen.findByTestId("hero-portfolio-link");
+    expect(portfolioLink).toBeInTheDocument();
+    expect(portfolioLink).toHaveAttribute("href", "#portfolio-analysis");
+    expect(screen.getByTestId("hero-portfolio-cta")).toBeInTheDocument();
+
+    // Click the portfolio link
+    fireEvent.click(portfolioLink);
+
+    expect(scrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    expect(eventSpy).toHaveBeenCalled();
+    const customEvt = eventSpy.mock.calls[0][0] as CustomEvent;
+    expect(customEvt.detail).toBe("portfolio");
+
+    // Cleanup
+    document.body.removeChild(fakeTarget);
+    window.removeEventListener("tradex:switch-preview-tab", eventSpy);
+  });
 });

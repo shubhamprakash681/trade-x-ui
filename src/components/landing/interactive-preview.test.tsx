@@ -217,4 +217,37 @@ describe("InteractivePreview", () => {
     expect(screen.getAllByText(/Price crosses (above|below)/i).length).toBeGreaterThan(0);
     expect(screen.getByText("₹3,000.00")).toBeInTheDocument();
   });
+
+  it("switches active tab to portfolio when tradex:switch-preview-tab event or hashchange fires", async () => {
+    vi.mocked(pricesApi.getLatestPrices).mockResolvedValue([]);
+    const { container } = renderWithClient(<InteractivePreview />);
+
+    const section = container.querySelector("#portfolio-analysis");
+    expect(section).toBeInTheDocument();
+
+    // Default tab is charts
+    expect(screen.getByText("High-Resolution Technical Charts")).toBeInTheDocument();
+
+    // Trigger custom switch event
+    act(() => {
+      window.dispatchEvent(new CustomEvent("tradex:switch-preview-tab", { detail: "portfolio" }));
+    });
+
+    // Active tab is now portfolio
+    expect(await screen.findByText("Real-Time Net Worth & Holding Metrics")).toBeInTheDocument();
+    expect(screen.getByText("Total Portfolio")).toBeInTheDocument();
+
+    // Switch to another tab first
+    const ordersBtn = screen.getByRole("button", { name: /Order Execution/i });
+    fireEvent.click(ordersBtn);
+    expect(await screen.findByText("Simulated Market & Limit Orders")).toBeInTheDocument();
+
+    // Simulate hashchange to #portfolio-analysis
+    window.location.hash = "#portfolio-analysis";
+    act(() => {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
+
+    expect(await screen.findByText("Real-Time Net Worth & Holding Metrics")).toBeInTheDocument();
+  });
 });

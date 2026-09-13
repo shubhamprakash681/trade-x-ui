@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  ArrowDown,
+  Briefcase,
   TrendingUp,
   TrendingDown,
   ShieldCheck,
@@ -93,7 +95,9 @@ export function HeroSection() {
 
   const cashBalance = useDemoTradingStore((s) => s.cashBalance);
   const holdings = useDemoTradingStore((s) => s.holdings);
+  const orders = useDemoTradingStore((s) => s.orders);
   const executeTrade = useDemoTradingStore((s) => s.executeTrade);
+  const hasTrades = orders.length > 0;
 
   const symbols = useMemo(() => {
     const listSymbols = stockList.map((s) => s.symbol);
@@ -187,6 +191,20 @@ export function HeroSection() {
     }, 4000);
   }
 
+  const handleScrollToPortfolio = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("tradex:switch-preview-tab", { detail: "portfolio" }));
+      const elem = document.getElementById("portfolio-analysis");
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.history.pushState(null, "", "#portfolio-analysis");
+      } else {
+        window.location.hash = "portfolio-analysis";
+      }
+    }
+  };
+
   return (
     <section className="relative overflow-hidden pt-10 pb-16 md:pt-20 md:pb-28 w-full min-w-0">
       {/* Background glowing gradients */}
@@ -241,6 +259,21 @@ export function HeroSection() {
                 </Button>
               </Link>
             </div>
+
+            {hasTrades && (
+              <div className="pt-1 flex items-center justify-center lg:justify-start">
+                <a
+                  href="#portfolio-analysis"
+                  onClick={handleScrollToPortfolio}
+                  data-testid="hero-portfolio-cta"
+                  className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 hover:bg-brand/20 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-brand transition-all cursor-pointer group"
+                >
+                  <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-brand" />
+                  <span>View Portfolio Analysis ({orders.length} {orders.length === 1 ? "trade" : "trades"} active)</span>
+                  <ArrowDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+                </a>
+              </div>
+            )}
 
             {/* Trust / Metric Badges */}
             <div className="pt-6 border-t border-border-primary/80 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
@@ -442,6 +475,24 @@ export function HeroSection() {
                   {formatCurrency(portfolioReturn)} ({formatPercent(portfolioReturnPercent)})
                 </span>
               </div>
+
+              {hasTrades && (
+                <a
+                  href="#portfolio-analysis"
+                  onClick={handleScrollToPortfolio}
+                  data-testid="hero-portfolio-link"
+                  className="mt-3 flex items-center justify-between gap-2 rounded-lg border border-brand/40 bg-brand/10 hover:bg-brand/20 px-3 py-2 text-xs font-semibold text-brand transition-all group cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5 truncate">
+                    <Briefcase className="h-3.5 w-3.5 shrink-0 text-brand" />
+                    <span>Portfolio Analysis ({orders.length} {orders.length === 1 ? "trade" : "trades"})</span>
+                  </span>
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-brand shrink-0">
+                    <span>View Breakdown</span>
+                    <ArrowDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+                  </span>
+                </a>
+              )}
             </div>
           </div>
         </div>

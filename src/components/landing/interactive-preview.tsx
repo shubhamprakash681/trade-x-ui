@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LineChart, Briefcase, Layers, Bell, Check, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useStocks } from "@/hooks/use-stocks";
@@ -118,6 +118,34 @@ export function InteractivePreview() {
   const [activeTab, setActiveTab] = useState<TabKey>("charts");
   const [selectedPeriod, setSelectedPeriod] = useState<string>("1D");
 
+  useEffect(() => {
+    const handleSwitchTab = (e: Event) => {
+      const customEvent = e as CustomEvent<TabKey>;
+      if (customEvent.detail) {
+        setActiveTab(customEvent.detail);
+      } else {
+        setActiveTab("portfolio");
+      }
+    };
+
+    const checkHash = () => {
+      if (
+        typeof window !== "undefined" &&
+        (window.location.hash === "#portfolio-analysis" || window.location.hash === "#portfolio")
+      ) {
+        setActiveTab("portfolio");
+      }
+    };
+
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+    window.addEventListener("tradex:switch-preview-tab", handleSwitchTab);
+    return () => {
+      window.removeEventListener("hashchange", checkHash);
+      window.removeEventListener("tradex:switch-preview-tab", handleSwitchTab);
+    };
+  }, []);
+
   const selectedSymbol = useDemoTradingStore((s) => s.selectedSymbol);
   const cashBalance = useDemoTradingStore((s) => s.cashBalance);
   const holdings = useDemoTradingStore((s) => s.holdings);
@@ -214,7 +242,7 @@ export function InteractivePreview() {
   const currentTab = TABS.find((t) => t.id === activeTab)!;
 
   return (
-    <section className="py-20 bg-bg-secondary/40 border-t border-border-primary">
+    <section id="portfolio-analysis" className="py-20 bg-bg-secondary/40 border-t border-border-primary scroll-mt-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Title */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12 space-y-3">
