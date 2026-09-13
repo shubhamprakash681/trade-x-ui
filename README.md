@@ -30,9 +30,14 @@ npm run test
 npm run build
 ```
 
-For deployment and testing details, see [deployment documentation](docs/frontend/deployment.md) and [testing documentation](docs/frontend/frontend-testing.md).
+## Documentation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Backend API Map](docs/frontend/backend-api-map.md) — Exhaustive REST endpoint mapping and request/response specifications.
+- [API Limitations & Data Constraints](docs/frontend/api-limitations.md) — Intraday resolution limits, window clamping rules, and timeout guidelines.
+- [WebSocket Guide](docs/frontend/backend-websocket.md) — Real-time STOMP market streaming and topic subscriptions.
+- [Frontend Architecture](docs/frontend/frontend-architecture.md) — Component layout, charting strategy, state management, and data flow.
+- [Deployment Guide](docs/frontend/deployment.md) — Docker and production environment configuration.
+- [Testing Guide](docs/frontend/frontend-testing.md) — Unit, component, and integration testing instructions.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

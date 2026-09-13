@@ -207,7 +207,7 @@ Based on backend analysis:
 // Central configuration
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -338,15 +338,19 @@ StompClient.ts (singleton)
 
 ### Historical Data
 
-- Fetch via `GET /api/market/history/{symbol}?from=...&to=...`
+- Fetch via `GET /api/market/history/{symbol}?interval=...&range=...&from=...&to=...`
 - Render with TradingView Lightweight Charts
-- Full OHLCV data → **candlestick chart**
-- Support time range selection (1M, 3M, 6M, 1Y, 5Y, Max)
+- Full OHLCV data → **candlestick chart** (`CandlestickSeries`)
+- Volume overlay → **volume histogram** (`HistogramSeries`) aligned below price candlesticks
+- Top toolbar: TradingView-style interval selector pills (`1s`, `1m`, `1h`, `D`, `W`, `M`) with live crosshair OHLCV readouts
+- Bottom toolbar: Range presets (`1D`, `5D`, `1M`, `3M`, `6M`, `YTD`, `1Y`, `5Y`, `All`) and Custom Date Range picker
+- Performance & Safety: High-frequency queries (`1s`, `1m`) are clamped upfront by the backend to safe resolutions (max 3,600 and 5,000 candles), preventing request timeouts. Detailed specs in [api-limitations.md](api-limitations.md).
+- Smooth UX: TanStack Query uses `placeholderData: (prev) => prev` to prevent blank canvas flickering while switching intervals/ranges.
 
 ### Live Updates
 
 - Subscribe to `/topic/{symbol}` via STOMP
-- On each tick → update the current candle in the chart
+- On each tick → update the current candle in the chart and price line
 - **Do NOT** refetch entire history on each tick
 
 ---

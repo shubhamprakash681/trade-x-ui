@@ -419,20 +419,31 @@ interface ApiError {
 
 **Auth:** Required
 
-**Path params:** `symbol`
+**Path params:** `symbol` — Stock ticker symbol (case-insensitive, e.g. `RELIANCE`, `TCS`)
 
 **Query parameters:**
-| Param  | Type        | Required | Format       | Description  |
-| ------ | ----------- | -------- | ------------ | ------------ |
-| `from` | `LocalDate` | No       | `YYYY-MM-DD` | Start date   |
-| `to`   | `LocalDate` | No       | `YYYY-MM-DD` | End date     |
+| Param | Type | Required | Format / Options | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `interval` | `string` | No | `1s`, `1m`, `1h`, `D`, `W`, `M`, or full enum names | Candle interval. Case-sensitive for TradingView codes (`1m` = Minute, `1M` = Monthly). Default: backend configured interval (`DAILY`). |
+| `range` | `string` | No | `1D`, `5D`, `1M`, `3M`, `6M`, `YTD`, `1Y`, `5Y`, `ALL` | Preset range window. Calculates start time relative to now. |
+| `from` | `string` | No | Epoch ms/sec, `YYYY-MM-DD`, or `YYYY-MM-DDTHH:mm:ss` | Explicit start date/time (overrides `range`). |
+| `to` | `string` | No | Epoch ms/sec, `YYYY-MM-DD`, or `YYYY-MM-DDTHH:mm:ss` | Explicit end date/time. Default: now. |
+
+> [!NOTE]
+> **Safety Clamping & Capacity Limits:**
+> - `SECONDS`: Clamped to at most **3,600 candles** (latest 1 hour).
+> - `MINUTE`: Clamped to at most **5,000 candles** ($\approx 3.5$ days).
+> - `HOURLY`: Clamped to at most **5,000 candles** ($\approx 208$ days).
+> - `DAILY`: Full 10-year history is completely preserved ($\approx 3,652$ daily candles).
+> - Response payload is capped at **5,000 candles** maximum.
+> - Detailed specifications are documented in [api-limitations.md](api-limitations.md).
 
 **Response (200):** `CandleResponse[]`
 ```json
 [
   {
     "symbol": "RELIANCE",
-    "interval": "1d",
+    "interval": "DAILY",
     "candleTime": "2026-09-05T00:00:00",
     "open": 2935.50,
     "high": 2955.75,

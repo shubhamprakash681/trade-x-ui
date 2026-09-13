@@ -419,25 +419,27 @@ Route: `/stocks/:symbol`
 
 **Display:** company name, symbol, current price, price change, percentage change.
 
-- Chart intervals → determined by backend capabilities.
-- OHLC data → candlestick chart.
-- Close-only data → line / area chart.
-- Open, High, Low, Previous Close, Volume → display only if provided by backend.
+- Chart intervals → `1s`, `1m`, `1h`, `D`, `W`, `M` (TradingView standard codes).
+- Range presets → `1D`, `5D`, `1M`, `3M`, `6M`, `YTD`, `1Y`, `5Y`, `All` + Custom date picker.
+- OHLCV data → Candlestick chart with volume histogram sub-series.
+- Live Crosshair Toolbar → Live OHLCV readouts (Open, High, Low, Close, Diff, %, Volume).
+- Open, High, Low, Previous Close, Volume → provided by backend `/api/market/history/{symbol}` and `/topic/{symbol}`.
 
 ---
 
 ## 14. Historical Chart
 
-Use TradingView Lightweight Charts (or equivalent).
+Use TradingView Lightweight Charts (`createChart`, `CandlestickSeries`, `HistogramSeries`).
 
 **Requirements:**
 
-- Responsive
-- Zoom & pan
-- Tooltip
-- Timestamp & price formatting
-- Large dataset handling
-- Missing data handling
+- Responsive with `ResizeObserver`
+- Zoom & pan with reset zoom button
+- Crosshair tooltip with live OHLCV status bar
+- Timestamp & price formatting (local time, seconds visible for `1s`)
+- Large dataset handling: High-frequency intervals (`1s`, `1m`) are clamped upfront by the backend to safe maximum windows (max 3,600 and 5,000 candles) to avoid slow generation and request cancellation. See [api-limitations.md](docs/frontend/api-limitations.md).
+- Smooth UX: TanStack Query uses `placeholderData: (prev) => prev` to prevent blank flicker during interval/range switches.
+- Volume histogram overlaid on separate sub-scale at the bottom of the chart.
 
 > Do not manually render thousands of SVG elements.
 
