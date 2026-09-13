@@ -45,15 +45,15 @@ export default function StockDetailPage() {
     setCustomDates({});
     if (newInterval === "1s") {
       setRange("1D");
-    } else if (newInterval === "1m" && (range === "1Y" || range === "5Y" || range === "All")) {
+    } else if (newInterval === "1m" && range !== "1D" && range !== "5D") {
       setRange("1D");
-    } else if (newInterval === "1h" && (range === "1Y" || range === "5Y" || range === "All")) {
+    } else if (newInterval === "1h" && (range === "1D" || range === "5Y" || range === "All")) {
       setRange("1M");
     } else if (newInterval === "D" && (range === "1D" || range === "5D")) {
       setRange("1Y");
-    } else if (newInterval === "W" && (range === "1D" || range === "5D" || range === "1M")) {
+    } else if (newInterval === "W" && (range === "1D" || range === "5D" || range === "1M" || range === "3M")) {
       setRange("5Y");
-    } else if (newInterval === "M") {
+    } else if (newInterval === "M" && range !== "5Y" && range !== "All") {
       setRange("All");
     }
   };
@@ -62,11 +62,13 @@ export default function StockDetailPage() {
     setRange(newRange);
     setCustomDates({});
     if (newRange === "1D") {
-      if (interval !== "1s") {
+      if (interval !== "1s" && interval !== "1m") {
         setInterval("1m");
       }
     } else if (newRange === "5D") {
-      if (interval !== "1s" && interval !== "1m") {
+      if (interval === "1s") {
+        setInterval("1m");
+      } else if (interval !== "1m" && interval !== "1h") {
         setInterval("1h");
       }
     } else if (newRange === "1M" || newRange === "3M" || newRange === "6M" || newRange === "YTD" || newRange === "1Y") {

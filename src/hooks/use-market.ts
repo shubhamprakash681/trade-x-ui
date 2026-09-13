@@ -36,6 +36,7 @@ export function useMarketHistory(symbol: string, params?: MarketHistoryParams) {
     queryFn: () => marketApi.getHistory(symbol, params),
     enabled: Boolean(symbol),
     staleTime: params?.interval === "1s" || params?.interval === "SECONDS" ? 2_000 : 30_000,
+    placeholderData: (previousData) => previousData,
   });
 }
 

@@ -25,6 +25,7 @@ export const marketApi = {
     return apiClient
       .get<CandleResponse[]>(`/api/market/history/${symbol}`, {
         params,
+        timeout: 60_000,
       })
       .then((r) => r.data);
   },

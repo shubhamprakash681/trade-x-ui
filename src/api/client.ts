@@ -4,7 +4,7 @@ import type { ApiError } from "@/types/api.types";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-const TIMEOUT = 15_000;
+const TIMEOUT = 60_000;
 
 const TOKEN_KEY = "tradex_access_token";
 const REFRESH_TOKEN_KEY = "tradex_refresh_token";
