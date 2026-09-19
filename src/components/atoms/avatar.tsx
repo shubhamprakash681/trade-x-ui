@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 /* eslint-disable @next/next/no-img-element -- avatar URLs are backend-provided, dynamic external URLs. */
 import { cn, getInitials } from "@/lib/utils";
 
@@ -15,13 +18,22 @@ const sizeClasses = {
 };
 
 export function Avatar({ src, name, size = "md", className }: AvatarProps) {
+  const [imageError, setImageError] = useState(false);
+  const [prevSrc, setPrevSrc] = useState(src);
+
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setImageError(false);
+  }
+
   const initials = getInitials(name);
 
-  if (src) {
+  if (src && !imageError) {
     return (
       <img
         src={src}
         alt={name || "User avatar"}
+        onError={() => setImageError(true)}
         className={cn(
           "rounded-full object-cover ring-2 ring-border-primary",
           sizeClasses[size],
