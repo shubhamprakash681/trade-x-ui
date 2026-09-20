@@ -1,82 +1,97 @@
 @import "tailwindcss";
 
-/* ─── TradeX Design System ─────────────────────────────────────────────────── */
+/* ─── Titanium Midnight Luxury Fintech Palette ─────────────────────────────── */
 
 /* Light mode (default) */
 :root {
   /* Brand */
-  --brand-primary: #6366f1;
-  --brand-primary-hover: #4f46e5;
-  --brand-secondary: #0ea5e9;
-  --brand-accent: #8b5cf6;
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-secondary: #0284c7;
+  --brand-accent: #4f46e5;
 
   /* Semantic / Financial */
-  --color-profit: #10b981;
+  --color-profit: #059669;
   --color-profit-bg: #ecfdf5;
-  --color-loss: #ef4444;
-  --color-loss-bg: #fef2f2;
-  --color-warning: #f59e0b;
+  --color-loss: #e11d48;
+  --color-loss-bg: #fff1f2;
+  --color-warning: #d97706;
   --color-warning-bg: #fffbeb;
-  --color-info: #3b82f6;
+  --color-info: #2563eb;
 
-  /* Surfaces */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
+  /* Surfaces (Light Mode) */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
   --bg-elevated: #ffffff;
   --border-primary: #e2e8f0;
   --border-secondary: #cbd5e1;
 
-  /* Text */
+  /* Text (Light Mode) */
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-tertiary: #94a3b8;
   --text-inverse: #ffffff;
 
-  /* Chart */
-  --chart-line: #6366f1;
-  --chart-candle-up: #10b981;
-  --chart-candle-down: #ef4444;
+  /* Chart (Light Mode) */
+  --chart-line: #2563eb;
+  --chart-candle-up: #059669;
+  --chart-candle-down: #e11d48;
   --chart-volume: #94a3b8;
   --chart-grid: #e2e8f0;
   --chart-crosshair: #64748b;
 
   /* Gradients */
-  --gradient-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #0ea5e9 100%);
-  --gradient-profit: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --gradient-surface: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  --gradient-brand: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #0284c7 100%);
+  --gradient-profit: linear-gradient(135deg, #059669 0%, #047857 100%);
+  --gradient-loss: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
-/* Dark mode */
+/* Dark mode (Titanium Midnight) */
 .dark {
-  --brand-primary: #818cf8;
-  --brand-primary-hover: #6366f1;
+  /* Brand */
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #60a5fa;
   --brand-secondary: #38bdf8;
-  --brand-accent: #a78bfa;
+  --brand-accent: #6366f1;
 
-  --color-profit: #34d399;
-  --color-profit-bg: #064e3b;
-  --color-loss: #f87171;
-  --color-loss-bg: #7f1d1d;
-  --color-warning: #fbbf24;
-  --color-warning-bg: #78350f;
-  --color-info: #60a5fa;
+  /* Semantic / Financial */
+  --color-profit: #10b981;
+  --color-profit-bg: rgba(16, 185, 129, 0.12);
+  --color-loss: #f43f5e;
+  --color-loss-bg: rgba(244, 63, 94, 0.12);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-info: #38bdf8;
 
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-elevated: #1e293b;
-  --border-primary: #334155;
-  --border-secondary: #475569;
+  /* Surfaces - Titanium Midnight */
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111726;
+  --bg-tertiary: #172033;
+  --bg-elevated: #1a243a;
+  --border-primary: rgba(255, 255, 255, 0.08);
+  --border-secondary: rgba(255, 255, 255, 0.15);
 
+  /* Text (Dark Mode) */
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-tertiary: #64748b;
-  --text-inverse: #0f172a;
+  --text-inverse: #0a0e17;
 
-  --chart-grid: #1e293b;
+  /* Chart (Dark Mode) */
+  --chart-line: #3b82f6;
+  --chart-candle-up: #10b981;
+  --chart-candle-down: #f43f5e;
+  --chart-volume: rgba(148, 163, 184, 0.35);
+  --chart-grid: rgba(255, 255, 255, 0.04);
+  --chart-crosshair: #94a3b8;
 
-  --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #38bdf8 100%);
+  --gradient-profit: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-loss: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  --gradient-surface: linear-gradient(180deg, #111726 0%, #0a0e17 100%);
 }
 
 /* ─── Tailwind Theme Tokens ────────────────────────────────────────────────── */
@@ -119,8 +134,9 @@
   --color-chart-grid: var(--chart-grid);
   --color-chart-crosshair: var(--chart-crosshair);
 
-  /* Font */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Fonts */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 /* ─── Base Styles ──────────────────────────────────────────────────────────── */
@@ -172,10 +188,10 @@ select {
   outline-offset: 2px;
 }
 
-/* Scrollbar styling */
+/* Luxury scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -184,7 +200,7 @@ select {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-secondary);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -195,4 +211,11 @@ select {
 ::selection {
   background-color: var(--brand-primary);
   color: var(--text-inverse);
+}
+
+/* Glassmorphic luxury card utility */
+.glass-panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
