@@ -13,7 +13,7 @@ import {
 } from "lightweight-charts";
 import { Calendar, RotateCcw, X } from "lucide-react";
 import type { CandleResponse, PriceResponse } from "@/types/api.types";
-import { Spinner } from "@/components/atoms/spinner";
+import { Skeleton } from "@/components/atoms/skeleton";
 
 export interface PriceChartProps {
   candles: CandleResponse[];
@@ -353,8 +353,17 @@ export function PriceChart({
       {/* ─── Chart Area ─── */}
       <div className="relative w-full h-[380px]">
         {isLoading && (
-          <div role="status" className="absolute inset-0 z-10 flex items-center justify-center bg-bg-primary/50 backdrop-blur-xs">
-            <Spinner size="lg" />
+          <div role="status" className="absolute inset-0 z-10 flex flex-col justify-end p-6 bg-bg-primary/70 backdrop-blur-xs gap-3">
+            <div className="flex items-end justify-between gap-1.5 h-48 px-2">
+              {Array.from({ length: 28 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="w-full rounded-t-sm"
+                  style={{ height: `${25 + ((i * 23) % 65)}%` }}
+                />
+              ))}
+            </div>
+            <Skeleton className="h-6 w-full rounded" />
           </div>
         )}
         <div

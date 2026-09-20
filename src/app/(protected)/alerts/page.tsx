@@ -7,7 +7,7 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
 import { ErrorState } from "@/components/atoms/error-state";
 import { Input } from "@/components/atoms/input";
-import { Spinner } from "@/components/atoms/spinner";
+import { ListSkeleton } from "@/components/atoms/skeleton";
 import { useToast } from "@/components/atoms/toast";
 import { useAlerts, useCreateAlert, useDeleteAlert } from "@/hooks/use-notification-features";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
@@ -22,7 +22,26 @@ export default function AlertsPage() {
   const [targetPrice, setTargetPrice] = useState("");
   const [condition, setCondition] = useState<AlertCondition>("ABOVE");
   const [formError, setFormError] = useState<string>();
-  if (alerts.isLoading) return <div className="flex min-h-64 items-center justify-center"><Spinner size="lg" /></div>;
+  if (alerts.isLoading) {
+    return (
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div>
+          <h1 className="flex items-center gap-2 text-3xl font-bold text-text-primary">
+            <BellDot className="h-7 w-7 text-brand" />Price alerts
+          </h1>
+          <p className="mt-1 text-text-secondary">Get notified when a supported instrument crosses your selected price.</p>
+        </div>
+        <Card className="p-0">
+          <CardHeader className="mb-0 border-b border-border-primary px-5 py-4">
+            <CardTitle>My alerts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ListSkeleton count={5} />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   if (alerts.isError || !alerts.data) return <ErrorState title="Couldn't load alerts" description="Please try again in a moment." onRetry={() => alerts.refetch()} />;
   async function submit(event: FormEvent) { event.preventDefault(); const price = Number(targetPrice); if (!symbol.trim() || !Number.isFinite(price) || price < 0.0001) { setFormError("Enter a stock symbol and target price of at least ₹0.0001."); return; } setFormError(undefined); try { await create.mutateAsync({ symbol: symbol.trim().toUpperCase(), targetPrice: price, condition }); toast("success", "Price alert created", `You'll be notified when ${symbol.trim().toUpperCase()} moves ${condition.toLowerCase()} ${formatCurrency(price)}.`); setSymbol(""); setTargetPrice(""); } catch (exception) { const message = exception instanceof AxiosError ? exception.response?.data?.message : undefined; toast("error", "Alert could not be created", message || "Please verify the stock symbol and try again."); } }
   async function deleteAlert(id: number) { try { await remove.mutateAsync(id); toast("success", "Alert deleted"); } catch (exception) { const message = exception instanceof AxiosError ? exception.response?.data?.message : undefined; toast("error", "Alert could not be deleted", message || "Please try again."); } }

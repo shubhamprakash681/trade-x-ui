@@ -6,7 +6,7 @@ import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
 import { ErrorState } from "@/components/atoms/error-state";
 import { Input } from "@/components/atoms/input";
-import { Spinner } from "@/components/atoms/spinner";
+import { MarketsSkeleton } from "@/components/atoms/skeleton";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useLivePrices } from "@/hooks/use-live-prices";
 import { useStocks } from "@/hooks/use-stocks";
@@ -39,7 +39,7 @@ export default function MarketsPage() {
       </div>
 
       {stocks.isLoading ? (
-        <div className="flex min-h-64 items-center justify-center"><Spinner size="lg" /></div>
+        <MarketsSkeleton />
       ) : !stocks.data?.content.length ? (
         <Card><CardContent className="py-12 text-center text-text-secondary">No instruments match your search.</CardContent></Card>
       ) : (

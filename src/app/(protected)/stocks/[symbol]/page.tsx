@@ -16,7 +16,7 @@ import { FastOrderTicket } from "@/components/orders/fast-order-ticket";
 import { OrderBookDepth } from "@/components/market/order-book-depth";
 import { WatchlistToggle } from "@/components/watchlist/watchlist-toggle";
 import { ErrorState } from "@/components/atoms/error-state";
-import { Spinner } from "@/components/atoms/spinner";
+import { StockDetailSkeleton } from "@/components/atoms/skeleton";
 import { useToast } from "@/components/atoms/toast";
 import { useLatestPrice, useMarketHistory } from "@/hooks/use-market";
 import { usePortfolio, useOrderHistory, useSellOrder } from "@/hooks/use-portfolio";
@@ -116,11 +116,7 @@ export default function StockDetailPage() {
   };
 
   if (stock.isLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <StockDetailSkeleton />;
   }
 
   if (stock.isError || !stock.data) {

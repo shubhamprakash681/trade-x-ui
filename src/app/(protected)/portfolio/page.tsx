@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { ErrorState } from "@/components/atoms/error-state";
-import { Spinner } from "@/components/atoms/spinner";
+import { PortfolioSkeleton } from "@/components/atoms/skeleton";
 import { HoldingsTable } from "@/components/portfolio/holdings-table";
 import { PortfolioSummary } from "@/components/portfolio/portfolio-summary";
 import { usePortfolio } from "@/hooks/use-portfolio";
@@ -12,11 +12,7 @@ export default function PortfolioPage() {
   const portfolio = usePortfolio();
 
   if (portfolio.isLoading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <PortfolioSkeleton />;
   }
 
   if (portfolio.isError || !portfolio.data) {

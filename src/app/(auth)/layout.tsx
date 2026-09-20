@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Logo } from "@/components/atoms/logo";
 import { Footer } from "@/components/organisms/footer";
 import { useGuestGuard } from "@/hooks/use-guest-guard";
-import { FullPageSpinner } from "@/components/atoms/spinner";
+import { AuthLayoutSkeleton } from "@/components/atoms/skeleton";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const { isReady } = useGuestGuard();
 
   if (!isReady) {
-    return <FullPageSpinner />;
+    return <AuthLayoutSkeleton />;
   }
   return (
     <div className="flex min-h-screen flex-col bg-bg-primary text-text-primary overflow-x-clip w-full min-w-0">

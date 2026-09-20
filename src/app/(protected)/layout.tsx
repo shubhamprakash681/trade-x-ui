@@ -2,7 +2,7 @@
 
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { AppShell } from "@/components/organisms/app-shell";
-import { FullPageSpinner } from "@/components/atoms/spinner";
+import { FullPageSkeleton } from "@/components/atoms/skeleton";
 
 export default function ProtectedLayout({
   children,
@@ -12,11 +12,11 @@ export default function ProtectedLayout({
   const { isReady, isAuthenticated } = useAuthGuard();
 
   if (!isReady) {
-    return <FullPageSpinner />;
+    return <FullPageSkeleton />;
   }
 
   if (!isAuthenticated) {
-    return <FullPageSpinner />;
+    return <FullPageSkeleton />;
   }
 
   return <AppShell>{children}</AppShell>;

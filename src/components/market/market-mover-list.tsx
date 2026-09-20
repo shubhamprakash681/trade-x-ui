@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import type { MarketMoverResponse, MarketTrendResponse, PriceResponse } from "@/types/api.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
+import { MarketMoverSkeleton } from "@/components/atoms/skeleton";
 import { formatCurrency, formatPercent, getPnlColor } from "@/lib/utils";
 
 type Mover = MarketMoverResponse | MarketTrendResponse;
@@ -27,7 +28,7 @@ export function MarketMoverList({ title, items, kind, isLoading, isError, livePr
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading && <p className="p-5 text-sm text-text-secondary">Loading market data…</p>}
+        {isLoading && <MarketMoverSkeleton rows={5} />}
         {isError && <p className="p-5 text-sm text-loss">Market data is unavailable right now.</p>}
         {!isLoading && !isError && !items?.length && <p className="p-5 text-sm text-text-secondary">No market data is available.</p>}
         {!isLoading && !isError && items?.map((item) => {

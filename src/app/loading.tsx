@@ -1,5 +1,5 @@
-import { FullPageSpinner } from "@/components/atoms/spinner";
+import { FullPageSkeleton } from "@/components/atoms/skeleton";
 
 export default function Loading() {
-  return <FullPageSpinner />;
+  return <FullPageSkeleton />;
 }
