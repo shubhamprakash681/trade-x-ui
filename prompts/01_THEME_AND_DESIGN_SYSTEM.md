@@ -1,8 +1,30 @@
+# Step 1: Theme & Visual Tokens Overhaul (Titanium Midnight)
+
+Copy and paste this prompt to execute **Phase 1: Design System & Tokens**:
+
+```markdown
+# TASK: IMPLEMENT "TITANIUM MIDNIGHT" DESIGN SYSTEM IN TradeX UI
+
+## Context
+You are working on `trade-x-ui`. The goal of this task is to update the theme, CSS variables, and visual design tokens to the **Titanium Midnight** luxury fintech theme.
+
+### Key Rules:
+- DO NOT change any static component interfaces (`Button`, `Card`, `Input`, `AppShell`, `Sidebar`, `Navbar`, etc.).
+- Maintain backwards compatibility with all existing props so unit tests continue to pass.
+- Upgrade `src/app/globals.css` to transform the platform aesthetics from generic Indigo/Slate to a high-end Deep Obsidian Navy & Luminescent Jade/Coral palette.
+
+---
+
+## Instructions
+
+### 1. Update `src/app/globals.css`
+Replace the root and dark theme tokens in `src/app/globals.css`:
+
+```css
 @import "tailwindcss";
 
-/* ─── Titanium Midnight Luxury Fintech Palette ─────────────────────────────── */
+/* ─── Titanium Midnight Design System ──────────────────────────────────────── */
 
-/* Light mode (default) */
 :root {
   /* Brand */
   --brand-primary: #2563eb;
@@ -48,7 +70,6 @@
   --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
-/* Dark mode (Titanium Midnight) */
 .dark {
   /* Brand */
   --brand-primary: #3b82f6;
@@ -65,7 +86,7 @@
   --color-warning-bg: rgba(245, 158, 11, 0.12);
   --color-info: #38bdf8;
 
-  /* Surfaces - Titanium Midnight */
+  /* Surfaces (Titanium Midnight - Dark Mode) */
   --bg-primary: #0a0e17;
   --bg-secondary: #111726;
   --bg-tertiary: #172033;
@@ -94,16 +115,12 @@
   --gradient-surface: linear-gradient(180deg, #111726 0%, #0a0e17 100%);
 }
 
-/* ─── Tailwind Theme Tokens ────────────────────────────────────────────────── */
-
 @theme inline {
-  /* Brand colors */
   --color-brand: var(--brand-primary);
   --color-brand-hover: var(--brand-primary-hover);
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-accent: var(--brand-accent);
 
-  /* Financial */
   --color-profit: var(--color-profit);
   --color-profit-bg: var(--color-profit-bg);
   --color-loss: var(--color-loss);
@@ -112,7 +129,6 @@
   --color-warning-bg: var(--color-warning-bg);
   --color-info: var(--color-info);
 
-  /* Surfaces */
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-tertiary: var(--bg-tertiary);
@@ -120,102 +136,24 @@
   --color-border-primary: var(--border-primary);
   --color-border-secondary: var(--border-secondary);
 
-  /* Text */
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
   --color-text-inverse: var(--text-inverse);
 
-  /* Chart */
   --color-chart-line: var(--chart-line);
   --color-chart-candle-up: var(--chart-candle-up);
   --color-chart-candle-down: var(--chart-candle-down);
   --color-chart-volume: var(--chart-volume);
   --color-chart-grid: var(--chart-grid);
   --color-chart-crosshair: var(--chart-crosshair);
-
-  /* Fonts */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 }
+```
 
-/* ─── Base Styles ──────────────────────────────────────────────────────────── */
+### 2. Verify Component Tests
+Run the test suite to ensure the tokens didn't break any component contracts:
+```bash
+npm run test
+```
+```
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-html,
-body {
-  min-height: 100%;
-  overflow-x: clip;
-}
-
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  overflow-x: clip;
-}
-
-button,
-a,
-input,
-select {
-  -webkit-tap-highlight-color: transparent;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Focus visible ring */
-*:focus-visible {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: 2px;
-}
-
-/* Luxury scrollbar styling */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-secondary);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
-}
-
-/* Selection */
-::selection {
-  background-color: var(--brand-primary);
-  color: var(--text-inverse);
-}
-
-/* Glassmorphic luxury card utility */
-.glass-panel {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-}
