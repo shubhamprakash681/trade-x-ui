@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Heart, ShieldCheck, ExternalLink } from "lucide-react";
+import { Mail, Heart, ShieldCheck, ExternalLink, Globe } from "lucide-react";
 import { GithubIcon, LinkedinIcon, YoutubeIcon } from "@/components/atoms/social-icons";
 import { Logo } from "@/components/atoms/logo";
 
@@ -90,9 +90,26 @@ export function Footer() {
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-text-primary">Connect With Me</h3>
             <p className="mb-4 text-sm text-text-secondary">
               A personal portfolio project developed by{" "}
-              <span className="font-medium text-text-primary">Shubham Prakash</span>.
+              <a
+                href="https://shubhamprakash681.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-text-primary hover:text-brand transition-colors hover:underline"
+              >
+                Shubham Prakash
+              </a>.
             </p>
             <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="https://shubhamprakash681.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary bg-bg-primary text-text-secondary transition-colors hover:border-brand hover:text-brand"
+                aria-label="Personal Portfolio Website"
+                title="Portfolio Website"
+              >
+                <Globe className="h-4 w-4" />
+              </a>
               <a
                 href="https://github.com/shubhamprakash681"
                 target="_blank"
@@ -132,16 +149,28 @@ export function Footer() {
                 <Mail className="h-4 w-4" />
               </a>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-2">
               <a
-                href="https://videoshare.shubhamprakash681.in"
+                href="https://shubhamprakash681.in"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs text-text-tertiary transition-colors hover:text-brand break-all"
+                className="inline-flex items-center gap-1.5 text-xs text-text-secondary transition-colors hover:text-brand break-all font-medium"
               >
-                <span>Check out VideoShare project</span>
+                <Globe className="h-3.5 w-3.5 shrink-0 text-brand" />
+                <span>Visit Portfolio: shubhamprakash681.in</span>
                 <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
+              <div>
+                <a
+                  href="https://videoshare.shubhamprakash681.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-text-tertiary transition-colors hover:text-brand break-all"
+                >
+                  <span>Check out VideoShare project</span>
+                  <ExternalLink className="h-3 w-3 shrink-0" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -154,7 +183,7 @@ export function Footer() {
           <p>
             Made with <Heart className="inline h-3.5 w-3.5 fill-loss text-loss" /> by{" "}
             <a
-              href="https://github.com/shubhamprakash681"
+              href="https://shubhamprakash681.in"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-brand hover:underline"

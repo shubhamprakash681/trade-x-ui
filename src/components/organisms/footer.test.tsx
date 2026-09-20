@@ -15,8 +15,8 @@ describe("Footer", () => {
   it("credits Shubham Prakash and displays simulation disclaimer", () => {
     render(<Footer />);
 
-    const authorLink = screen.getByRole("link", { name: "Shubham Prakash" });
-    expect(authorLink).toHaveAttribute("href", "https://github.com/shubhamprakash681");
+    const authorLinks = screen.getAllByRole("link", { name: "Shubham Prakash" });
+    expect(authorLinks[0]).toHaveAttribute("href", "https://shubhamprakash681.in");
 
     expect(
       screen.getByText(/TradeX is a paper-trading simulation platform for educational purposes only/i),
